@@ -1,0 +1,36 @@
+EN PARENTESIS O COMA SE PUEDE BAJAR DE LINEA
+AGREGAR CONST ctrl + . , agregar consts
+
+class MainApp extends --> less o full widget 
+StatelessWidget --> la pantalla no cambia
+StatefullWidget --> la pantalla puede cambiar
+
+string data = '';
+
+home: Scaffold(
+body: Center(
+child: Column( --> column = vertical, --> row = horizontal
+mainAxisAlignment: mainAxisAlignment.center, --> ajusta la posicion al centro (existen otros)
+children: [
+const text('hello world1', style: TextStyle(fontSize: 40),), --> style PERMITE CUSTOMIZAR EL TEXTO. const: no cambia
+text('hello world2',),
+text(data,),
+SizedBox(height: 20), -->
+ElevatedButton(onPressed: (){*1*2},child: const Text('hola poner 3')) --> UN BOTON. onPressed: lo que pasa al tocarlo; (){una funcion}. child: lo que quiero que sea el boton, 
+],
+), //column
+
+
+
+1*print('presionado');
+2*{data = 'hello world3';
+   setState((){})};
+
+
+TP1: Hacer una aplicación con 6 botones  
+
+
+        Hola
+Show           Delete
+          -
+Azul             Rojo 
