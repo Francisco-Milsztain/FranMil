@@ -1,0 +1,129 @@
+//ESTE CODIGO VA EN: lib -> main.dart
+// ignore_for_file: camel_case_types
+
+import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
+
+import 'package:flutter/material.dart';
+
+void main() { //Se inicia la aplicación, con MainApp siendo el widget principal
+  runApp(const MainApp());
+}
+
+class MainApp extends StatelessWidget { //MainApp, al ser el widget principal, no va a cambiar, por lo que es un StatelessWidget (énfasis en less)
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      home: pagina(), //Se establece a "pagina" como la pantalla principal
+    );
+  }
+}
+
+class pagina extends StatefulWidget { //"pagina" va a cambiar, por lo que es un StatefulWidget (énfasis en ful)
+  const pagina({super.key});
+
+  @override
+  State<pagina> createState() => estadopagina(); //Se crea un estado para "pagina", y los cambios de este estado van a ser manejados por "estadopagina" 
+}
+
+class estadopagina extends State<pagina> { //"estadopagina" controla el estado de "pagina", por medio de los setState()
+
+//SE PROGRAMA DE ACA PARA ABAJO
+
+  //Variables
+  String texto = 'TEXTO'; //lo que dice el texto
+  double tamno = 20;       //el tamaño del texto
+  Color colortexto = Colors.black; //color texto inicial
+
+  //Funciones
+  void mostrar() { //funcion para mostrar el texto
+    setState(() {
+      texto = 'TEXTO';
+    });
+  }
+
+  void esconder() { //funcion para esconder el texto
+    setState(() {
+      texto = '';
+    });
+  }
+
+  void aumentar() { //funcion para aumentar el tamaño del texto
+    setState(() {
+      tamno += 5.0;
+    });
+  }
+
+  void reducir() { //funcion para reducir el tamaño del texto
+    setState(() {
+      tamno -= 5.0;
+    });
+  }
+
+  void colorazul() { //funcion para cambiar texto a color azul
+    setState(() {
+      colortexto = Colors.blue;
+    });
+  }
+
+  void colorrojo() { //funcion para cambiar texto a color rojo
+    setState(() {
+      colortexto = Colors.red;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+      body: Center( //Todo lo que venga abajo va a estar en el centro
+        child: Column( //Los elementos se van a posicionar uno arriba del otro, en el orden en el que están escritos  
+          mainAxisAlignment: MainAxisAlignment.center,
+
+          //Elementos
+          children: [
+            Text( //El texto central del programa
+              texto, //Variable que dicta lo que dice el texto
+              style: TextStyle(
+                fontSize: tamno,   //tamaño del texto
+                color: colortexto, //color del texto
+              ),
+            ),
+
+            ElevatedButton( //Boton para mostrar el texto
+              onPressed: mostrar,
+              child: const Text('Mostrar'),
+            ),
+
+            ElevatedButton( //Boton para esconder el texto
+              onPressed: esconder,
+              child: const Text('Esconder'),
+            ),
+
+            ElevatedButton( //Boton para aumentar tamaño del texto
+              onPressed: aumentar,
+              child: const Text('Aumentar'),
+            ),
+
+            ElevatedButton( //Boton para reducir tamaño del texto
+              onPressed: reducir,
+              child: const Text('Reducir'),
+            ),
+
+            ElevatedButton( //Boton para cambiar el texto a azul
+              onPressed: colorazul,
+              child: const Text('Azul'),
+            ),
+
+            ElevatedButton( //Boton para cambiar el texto a rojo
+              onPressed: colorrojo,
+              child: const Text('Rojo'),
+            ),
+
+          ],
+        ),
+      ),
+    );
+  }
+}
