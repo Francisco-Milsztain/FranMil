@@ -1,8 +1,6 @@
 //ESTE CODIGO VA EN: lib -> main.dart
 // ignore_for_file: camel_case_types
 
-import 'dart:nativewrappers/_internal/vm/lib/ffi_native_type_patch.dart';
-
 import 'package:flutter/material.dart';
 
 void main() { //Se inicia la aplicación, con MainApp siendo el widget principal
@@ -73,6 +71,8 @@ class estadopagina extends State<pagina> { //"estadopagina" controla el estado d
     });
   }
 
+//TERMINAN LAS FUNCIONES
+
   @override
   Widget build(BuildContext context) {
 
@@ -126,4 +126,4 @@ class estadopagina extends State<pagina> { //"estadopagina" controla el estado d
       ),
     );
   }
-}
+} //Cierro el widget principal
