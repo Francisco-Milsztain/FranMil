@@ -1,6 +1,5 @@
 //ESTE CODIGO VA EN: lib -> main.dart
 // ignore_for_file: camel_case_types
-
 import 'package:flutter/material.dart';
 
 void main() { //Se inicia la aplicación, con MainApp siendo el widget principal
@@ -49,13 +48,17 @@ class estadopagina extends State<pagina> { //"estadopagina" controla el estado d
 
   void aumentar() { //funcion para aumentar el tamaño del texto
     setState(() {
-      tamno += 5.0;
+      if (tamno < 115){
+        tamno += 5.0;
+      }
     });
   }
 
   void reducir() { //funcion para reducir el tamaño del texto
     setState(() {
-      tamno -= 5.0;
+      if (tamno > 5){
+        tamno -= 5.0;
+      }
     });
   }
 
@@ -187,7 +190,7 @@ class estadopagina extends State<pagina> { //"estadopagina" controla el estado d
             ElevatedButton(
               onPressed: reinicio,
               child: const Text('Reinicio'),
-              )
+              ),
 
           ]
         ),
