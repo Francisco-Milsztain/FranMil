@@ -31,7 +31,7 @@ class estadopagina extends State<pagina> { //"estadopagina" controla el estado d
 
   //Variables
   String texto = 'TEXTO'; //lo que dice el texto
-  double tamno = 20;       //el tamaño del texto
+  double tamno = 50;       //el tamaño del texto
   Color colortexto = Colors.black; //color texto inicial
 
   //Funciones
@@ -71,18 +71,33 @@ class estadopagina extends State<pagina> { //"estadopagina" controla el estado d
     });
   }
 
+  void reinicio() {
+    setState(() {
+      texto = 'TEXTO';
+      tamno = 50;
+      colortexto = Colors.black;
+    });
+  }
+
 //TERMINAN LAS FUNCIONES
 
   @override
   Widget build(BuildContext context) {
 
     return Scaffold(
-      body: Center( //Todo lo que venga abajo va a estar en el centro
-        child: Column( //Los elementos se van a posicionar uno arriba del otro, en el orden en el que están escritos  
-          mainAxisAlignment: MainAxisAlignment.center,
+      body: Center( 
+        child: Column(
+
+          mainAxisAlignment: MainAxisAlignment.start,    //Los elementos se alinean desde la parte superior
+          crossAxisAlignment: CrossAxisAlignment.center, //Los elementos se alinean en el centro
 
           //Elementos
           children: [
+            
+            SizedBox( //Espacio entre la parte superior y el texto
+              height: 50
+            ),
+
             Text( //El texto central del programa
               texto, //Variable que dicta lo que dice el texto
               style: TextStyle(
@@ -91,37 +106,90 @@ class estadopagina extends State<pagina> { //"estadopagina" controla el estado d
               ),
             ),
 
-            ElevatedButton( //Boton para mostrar el texto
-              onPressed: mostrar,
-              child: const Text('Mostrar'),
+            SizedBox( //Espacio entre el texto y los botones
+              height: 50
             ),
 
-            ElevatedButton( //Boton para esconder el texto
-              onPressed: esconder,
-              child: const Text('Esconder'),
+            Row( //Se abren las filas para los botones
+
+              mainAxisAlignment: MainAxisAlignment.center,
+
+              children: [ //Es necesario para crear las dos columnas que contengan tres botones cada una
+                
+                Column( //Se crea la primera columna de botones
+                  children: [
+
+                    ElevatedButton( //Boton para mostrar el texto
+                      onPressed: mostrar,
+                      child: const Text('Mostrar'),
+                    ),
+
+                    SizedBox(
+                      height: 30,
+                    ),
+
+                    ElevatedButton( //Boton para aumentar tamaño del texto
+                      onPressed: aumentar,
+                      child: const Text('Aumentar'),
+                    ),
+
+                    SizedBox(
+                      height: 30,
+                    ),
+
+                    ElevatedButton( //Boton para cambiar el texto a azul
+                      onPressed: colorazul,
+                      child: const Text('Azul'),
+                    ),
+
+                  ]
+                ),
+
+                SizedBox( //Se crea un espacio entre las dos columnas de botones
+                  width: 50,
+                ),
+
+                Column( //Se crea la segunda columna de botones
+                  children: [
+
+                    ElevatedButton( //Boton para esconder el texto
+                      onPressed: esconder,
+                      child: const Text('Esconder'),
+                    ),
+
+                    SizedBox(
+                      height: 30,
+                    ),
+
+                    ElevatedButton( //Boton para reducir tamaño del texto
+                      onPressed: reducir,
+                      child: const Text('Reducir'),
+                    ),
+
+                    SizedBox(
+                      height: 30,
+                    ),
+
+                    ElevatedButton( //Boton para cambiar el texto a rojo
+                      onPressed: colorrojo,
+                      child: const Text('Rojo'),
+                    ),
+
+                  ]
+                ),
+              ],
             ),
 
-            ElevatedButton( //Boton para aumentar tamaño del texto
-              onPressed: aumentar,
-              child: const Text('Aumentar'),
+            SizedBox(
+              height: 30,
             ),
 
-            ElevatedButton( //Boton para reducir tamaño del texto
-              onPressed: reducir,
-              child: const Text('Reducir'),
-            ),
+            ElevatedButton(
+              onPressed: reinicio,
+              child: const Text('Reinicio'),
+              )
 
-            ElevatedButton( //Boton para cambiar el texto a azul
-              onPressed: colorazul,
-              child: const Text('Azul'),
-            ),
-
-            ElevatedButton( //Boton para cambiar el texto a rojo
-              onPressed: colorrojo,
-              child: const Text('Rojo'),
-            ),
-
-          ],
+          ]
         ),
       ),
     );
