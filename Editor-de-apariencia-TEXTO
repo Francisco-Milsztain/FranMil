@@ -29,7 +29,7 @@ class estadopagina extends State<pagina> { //"estadopagina" controla el estado d
 //SE PROGRAMA DE ACA PARA ABAJO
 
   //Variables
-  String texto = 'TEXTO'; //lo que dice el texto
+  String texto = 'TEXTO';  //lo que dice el texto
   double tamno = 50;       //el tamaño del texto
   Color colortexto = Colors.black; //color texto inicial
 
@@ -74,7 +74,7 @@ class estadopagina extends State<pagina> { //"estadopagina" controla el estado d
     });
   }
 
-  void reinicio() {
+  void reinicio() { //funcion para devolver el texto al estado original
     setState(() {
       texto = 'TEXTO';
       tamno = 50;
