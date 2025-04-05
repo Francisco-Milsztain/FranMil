@@ -22,6 +22,7 @@ class _MainAppState extends State<MainApp> {
 
   String nombre = '';
   String apellido = '';
+  String apellidomostrar = '';
   String nombrecorrecto = 'Francisco';   //Cual es el nombre que debe ser ingresado
   String apellidocorrecto = 'Milsztain'; //Cual es el apellido que debe ser ingresado
 
@@ -34,30 +35,31 @@ class _MainAppState extends State<MainApp> {
   void ingreso(){ //Corroboracion de los datos ingresados
     setState(() {
       nombre = nombreingresado.text;       //Se asigna lo que se recibio en "nombreingresado" a la variable "nombre"
+      apellido = apellidoingresado.text; //Se asigna lo que se recibio en "apellidoingresado" a la variable "apellido"
 
       if (ocultar == false){ //Si "ocultar" == false, osea que el apellido puede ser mostrado:
-        apellido = apellidoingresado.text; //Se asigna lo que se recibio en "apellidoingresado" a la variable "apellido"
+        apellidomostrar = apellidoingresado.text; //Se asigna lo que se recibio en "apellidoingresado" a la variable "apellidomostrar"
       }
       if (ocultar == true){ //Si "ocultar" == true, osea que el apellido NO puede ser mostrado:
-        apellido = 'Apellido oculto';
+        apellidomostrar = 'Apellido oculto';
       }
 
       //Se determina si el nombre ingresado fue correcto o no
-      if (nombreingresado == nombrecorrecto){
+      if (nombre == nombrecorrecto){
         confirmacionnombre = 'Nombre Correcto';
         colornombre = Colors.green;
       }
-      if (nombreingresado != nombrecorrecto){
+      if (nombre != nombrecorrecto){
         confirmacionnombre = 'Nombre Incorrecto';
         colornombre = Colors.red;
       }
 
       //Se determina si el apellido ingresado fue correcto o no
-      if (apellidoingresado == apellidocorrecto){
+      if (apellido == apellidocorrecto){
         confirmacionapellido = 'Apellido Correcto';
         colorapellido = Colors.green;
       }
-      if (apellidoingresado != apellidocorrecto){
+      if (apellido != apellidocorrecto){
         confirmacionapellido = 'Apellido Incorrecto';
         colorapellido = Colors.red;
       }
@@ -106,7 +108,7 @@ class _MainAppState extends State<MainApp> {
             ),
 
             Text(
-              apellido, //MUESTRA EL APELLIDO QUE FUE INGRESADO
+              apellidomostrar, //MUESTRA EL APELLIDO QUE FUE INGRESADO
               style: TextStyle(
                 fontSize: 18,
               ),
