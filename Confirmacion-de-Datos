@@ -43,21 +43,21 @@ class _MainAppState extends State<MainApp> {
       }
 
       //Se determina si el nombre ingresado fue correcto o no
-      if (nombre == nombrecorrecto){
+      if (nombreingresado == nombrecorrecto){
         confirmacionnombre = 'Nombre Correcto';
         colornombre = Colors.green;
       }
-      if (nombre != nombrecorrecto){
+      if (nombreingresado != nombrecorrecto){
         confirmacionnombre = 'Nombre Incorrecto';
         colornombre = Colors.red;
       }
 
       //Se determina si el apellido ingresado fue correcto o no
-      if (apellido == apellidocorrecto){
+      if (apellidoingresado == apellidocorrecto){
         confirmacionapellido = 'Apellido Correcto';
         colorapellido = Colors.green;
       }
-      if (apellido != apellidocorrecto){
+      if (apellidoingresado != apellidocorrecto){
         confirmacionapellido = 'Apellido Incorrecto';
         colorapellido = Colors.red;
       }
