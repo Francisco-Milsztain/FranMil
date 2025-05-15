@@ -1,0 +1,91 @@
+PARA CREAR LOS NUEVOS ARCHIVOS .dart TMB SE CREAN DOS CARPETAS, UNA ADENTRO DE LA OTRA
+la class de estos nuevso archivos en este ejemplo es LoginScreen y HomeScreen
+
+la home del main solo deja tener un archivo al que se llama.
+para tener acceso a mas de una patnalla se usa un router, aca se definen
+cuales son las pantallas.
+a veces conviene no usar librerias, porque si estas dejan de funcionar se 
+arruina el codigo, por lo que es más seguro no usar librerias.
+
+dependencias = librerias
+funcion = metodo
+variable = atributo
+
+-hacer un router:
+se usa la libreria "go_router" (fijarse la de más descargas o "flutter fav.")
+°como incluir una liberria: pub.dev (pagina de googel de muchas libs)
+ 
+EN LA TERMINAL PONER:
+flutter pub add [nombre de libreria]
+flutter pub add go_router
+
+buscar un archivo pubspec.yaml para verificar si se instalo la libreria
+
+°como usar el router
+ hay que crear las rutas/paths para llegar a las pantallas
+ hay que hacer que las pantallas invoquen a otras
+
+creacion del router:
+lib -> carpeta "core" -> carpeta "router" -> archivo "app-router"[nombre].dart
+app routern es un *objeto*
+
+ESCRIBIR EN LINEA 1: 
+final appRouter = GoRouter(
+
+	initialLocation: '/login'	
+
+	routes: [
+	
+	GoRoute(path:'/login', builder:(context,state) => LoginScreen(),), #el primer path es al ruta, el segundo path (const) es la pantalla destinada
+	GoRoute(path:'/home', builder:(context,state) => HomeScreen(),),
+
+	],
+); 
+
+ctrl + . import la libreria
+
+----------
+
+el router esta hecho pero hay que integrarlo a .main
+
+En main se programa:
+
+return MaterialApp.router( #se saca el const y se borra todo lo de abajo
+reouterConfig: appRouter,
+);
+
+----
+
+para que dentro de una pantalla se pueda cambiar a la otra, se crea un boton
+
+dentro de una pantalla se programa: 
+
+ElevetadButton(onPressed: (){
+
+	context.go('/home'); #ctrl + . import --> cambia entre pantallas. TAMBIEN EXISTE context.push que permite desilizar entre pantallas
+
+}, child: const Text('cambio'),),
+
+----
+
+como mandar informacion entre pantallas
+la pantalla q recibe tiene q estar esperqando recibir algo
+
+se crea una variable en la pantalla homescreen
+
+abajo de class HomeScreen
+
+String usuario;
+HomeScreen({super.key, required this.username})
+
+mas abajo del scaffold se escribe
+child: Text('Bienvenido &usuario'),
+
+en app-router.dart
+
+GoRoute(path:'/home', builder:(context,state) => HomeScreen(usuario: 'fran'),), --> se cambia a => HomeScreen(usuario: state.extra.toString(),),), 
+
+fran se pone cuando se hace el context.push('/home', extra: 'fran');
+
+
+CAMBIAR EL TP LOGIN PARA QUE CAMBIE DE PANTALLA
