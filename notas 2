@@ -87,5 +87,7 @@ GoRoute(path:'/home', builder:(context,state) => HomeScreen(usuario: 'fran'),), 
 
 fran se pone cuando se hace el context.push('/home', extra: 'fran');
 
+TODO ESTO SE HIZO PARA QUE LA PANTALLA DE LOGIN LE ENVIE DATOS A LA PANTALLA HOME, el dato siendo el usuario
+
 
 CAMBIAR EL TP LOGIN PARA QUE CAMBIE DE PANTALLA
