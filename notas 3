@@ -1,0 +1,64 @@
+paradigma de los objetos:
+(para cualquier lenguaje de programacion)
+
+un objeto tiene funciones dentro, estas funciones se llaman luego de que se ponga un punto (.) seguido del objeto: serial.Print() [obj].[func]
+
+un objeto se crea debido a la necesidad de representar una cosa de la vida real en software, haciendo un tipo nuevo d variable que represente este objeto,
+una entidad que tienen adentro atributos(variables) y/o métodos(funciones)
+
+
+//para crear un objeto hay que crear una class. a la class se le agregan atributos. la class es el molde del producto ("El objeto es la instancia de la clase.")
+Class Product 
+{
+  String name;
+  int price;
+
+  //tambien puedo agregar un "?" luego de poner el tipo de variable, para que no sea obligatoria recibirlo para que inicie el programa.
+  int? cantidad; 
+  //etc
+}
+
+//ESTO ES UN OBJETO. 
+Product myproduct; //Se declara una variable de tipo "product", el tipo "product" no existe, sino que se inventa a voluntad
+Product myproduct2; //Se pueden hacer más variables de tipo "Product", y todas van a tener sus atributos que salen de la class
+myproduct.name = iphone  // se inventan funciones para myproduct y se les pueden asignar nuevos valores.
+myproduct.prize = 1000   
+
+
+una clase también puede tener métodos,
+
+Class Product
+{
+  boolean isFree () //"isFree" es el nombre del método (función). Este método verifica si el precio es 0, y devuelve true o false. boolean es el tipo de dato que deuvelve el metodo.
+  {
+    return this.price == 0; //Se agrega "this." porque se está trabajando dentro de una clase
+  }
+}
+
+if(myproduct.isFree()) //esto se programa fuera de la class. si el producto == 0 la condicion se cumple. Es lo mismo que poner "if (myproduct.prize == 0){}"
+{
+  
+}
+
+
+CUANDO YO QUIERO CREAR UN PRODUTO, HAY QUE USAR UN MÉTODO QUE TIENEN TODAS LAS CLASES. SE LLAMA CONSTRUCTOR.
+el constructor tiene el mismo nombre que la clase, no devuelve nada, y necesita los parámetros de la class.
+el constructor es un método que se escribe dentro de la class.
+
+//Constructor:
+void prouduct(String name, int price, ) //se meten los parametros de la class.
+{
+  this.name = name;
+  this.price = price;
+}
+
+//esta linea va debajo de la class y antes de las variables externas.
+product myproduct = product("iphone", 1000) //se tiene que poner los atributos en el orden de los parametros del constructor. name = "iphone", price = 1000.
+
+
+LA PARTE DE CLASS ES UN ARCHIVO APARTE, ESTE LUEGO SE IMPORTA EN UNA PANTALLA, LA QUE VA A TENER, EN ESTE CASO, Product myproduct ...etc
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+COMO HACER TODO ESTO EN DART
+
