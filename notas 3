@@ -154,3 +154,23 @@ void iniState() //Ocurre apenas se llega a esta pantalla
 
 @override
 return const 
+
+
+--------
+
+en una clase se define user{
+email, contraseña, nombre, direccion
+}
+
+class user
+
+se crea una lista de 5 usuarios todos con sus datos
+
+en la pantalla 1 se piden el email y password.
+
+1) definir la clase user
+2) crear una lista de user
+3) se verifica que exista el email
+4) si existe, validar contraseña
+5) si la contraseña es correcta se cambia de pantalla. si es incorrecto se indica incorrecto.
+6) bienvenido nombre, mostrar datos de usuario en pantalla home.
