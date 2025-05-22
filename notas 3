@@ -62,3 +62,95 @@ LA PARTE DE CLASS ES UN ARCHIVO APARTE, ESTE LUEGO SE IMPORTA EN UNA PANTALLA, L
 
 COMO HACER TODO ESTO EN DART
 
+Se crean carpetas para las pantallas y para el router dentro de lib.
+pantalla1: home
+
+stl
+class HomeScreen
+
+se hace el arhivo del router.
+GoRoute
+(
+  blabla
+)
+
+en main se hace el main de router
+
+
+SE CREA UNA CARPETA NUEVA EN LIB, SE LLAMA ENTITIES, EN ESTA CARPETA SE CREA PRODUCT.DART (todo minuscula xd) 
+
+class Product
+{
+  String name;  
+  int? price;
+
+  //constructor
+  Product({required this.name, this.price}); //no se le pone required a price porque puse "int?"
+
+  bool isFree()
+  {
+    return price == 0;
+  }
+  
+}
+
+---
+
+En la pantalla pones el statefulwidget
+
+importo el product.dart
+
+Product myProduct = Product(name: 'Iphone', price: 1000, ); 
+Product myProduct2 = Product(name: 'Samsung');
+
+//esta lista va a tener adentro productos de tipo product. si los corchetes quedan vacios está vacia 
+List<Product> products = 
+[
+  Product(name: 'nokia', price: 1000),
+  Product(name: 'franphone'),
+  Product(name: 'nashe', price: 2000),
+  Product(name: 'xbox', price: 3000),
+
+]; 
+
+@override
+
+void iniState() //Ocurre apenas se llega a esta pantalla
+{
+  super.initState();
+
+  print("name: ${myProduct.name} and price: ${myProduct.price}");
+  
+  myProduct.price = 2000;
+  print("name: ${myProduct.name} and price: ${myProduct.price}");
+
+  if (myProduct.isFree())
+  {
+    print("FREE");
+  }
+
+  if (myProduct.name == 'Samsung')
+  {
+    Print("Si es");
+  }
+
+  products.add(Product(name: 'Nintendo', price: 200));
+
+  //como ver los elementos de la lista products
+  products.forEach((product)
+  {
+    print("Product name: ${product.name} and price: ${product.price}");
+  }
+  
+  print(products[0].name);
+
+  Product primeriphone = products.firstWhere(
+    (product) => product.name == 'iphone');
+
+  print("Iphone price: ${primeriphone.price}");
+
+  
+}
+
+@override
+return const 
