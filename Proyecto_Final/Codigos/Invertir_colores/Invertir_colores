@@ -8,8 +8,8 @@ img = cv2.imread("ejemplo1.jpg") # Se iguala a img a la lectura de la matriz de 
 inversa = 255 - img # Se iguala a inversa el resultado de 255 - img ; lo que resulta en que se inviertan todos los pixeles de la imagen
 
 # Mostrar la imagen original e invertida
-cv2.imshow("Original", img)      # Se abre una ventana con la imagen original
-cv2.imshow("Invertida", inversa) # Se abre una ventana con la imagen inversa
+cv2.imshow("Original", img)      # Se abre una ventana con la imagen original, de titulo "Original" y contenido img
+cv2.imshow("Invertida", inversa) # Se abre una ventana con la imagen inversa, de titulo "Inversa" y contenido inversa
 
 # Lo de abajo sirve para que al tocar la tecla 'x' se cierre el programa
 
