@@ -2,15 +2,22 @@ import cv2
 import numpy as np
 
 # Cargar la imagen
-img = cv2.imread("ejemplo1.jpg") #Se iguala a img a la lectura de la matriz de "ejemplo1.jpg"
+img = cv2.imread("ejemplo1.jpg") # Se iguala a img a la lectura de la matriz de "ejemplo1.jpg"
 
 # Invertir los colores usando NumPy
-inversa = 255 - img #Se iguala a inversa el resultado de 255 - img ; lo que resulta en que se inviertan todos los pixeles de la imagen
+inversa = 255 - img # Se iguala a inversa el resultado de 255 - img ; lo que resulta en que se inviertan todos los pixeles de la imagen
 
 # Mostrar la imagen original e invertida
-cv2.imshow("Original", img)      #Se abre una ventana con la imagen original
-cv2.imshow("Invertida", inversa) #Se abre una ventana con la imagen inversa
+cv2.imshow("Original", img)      # Se abre una ventana con la imagen original
+cv2.imshow("Invertida", inversa) # Se abre una ventana con la imagen inversa
 
-# Lo de abajo sirve para que al tocar cualquier tecla se cierre el programa (se puede eliminar)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# Lo de abajo sirve para que al tocar la tecla 'x' se cierre el programa
+
+print('Presiona x para cerrar el programa')
+while True:              # Se pone while porque si la tecla presionada no es 'x' el programa terminaria
+    key = cv2.waitKey(0) # Se espera infinitamente hasta que una tecla sea presionada, esta tecla se iguala a key
+
+    if key == ord('x'): # Si key es igual a 'x' (key se recibe como valor ASCII, y ord() conviere ese valor en texto)
+        print("Saliste con la tecla x") # En la terminal se imprime esto
+        cv2.destroyAllWindows()         # Se cierran todas las ventanas
+        break # En caso de que la tecla presionada no haya sido 'x', se vuelve al prinicipio el while
