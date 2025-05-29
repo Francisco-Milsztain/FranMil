@@ -128,3 +128,160 @@ TAREA:
 sobre la app del login, la pantalla home ahora tiene que tener una lista de ALGO QUE TE GUSTE, y tiene que tener una imagen titulo e info extra
 
 en el repositorio hay un codigo que se llama movieapp
+
+----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------
+
+MAIN
+import 'package:flutter/material.dart';
+import 'package:myapp/router/app-router.dart';
+
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatefulWidget {
+   MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp.router(
+      routerConfig: appRouter,
+
+    );
+  }
+}
+
+app_router
+import 'package:go_router/go_router.dart';
+import 'package:myapp/screens/loginscreen.dart';
+import 'package:myapp/screens/homescreen.dart';
+
+final appRouter = GoRouter(
+
+	initialLocation: '/home',
+
+	routes: 
+  [
+
+    GoRoute(
+      path:'/login',
+      builder:(context, state) => 
+      login()
+    ),
+
+    
+    GoRoute(
+      path:'/home',
+      builder:(context, state) => 
+      home()
+    ),
+
+	],
+);
+
+movie
+class Movie {
+
+String id;
+String title;
+String description;
+String posterUrl;
+String director;
+int year;
+
+//constructor
+Movie({
+  required this.id,
+  required this.title,
+  required this.description,
+  required this.posterUrl,
+  required this.director,
+  required this.year,
+  });
+}
+
+final List<Movie> listmovies = 
+[
+  Movie(
+    id: '1',
+    title: 'Escape de Sobibor',
+    description: 'Historia de Escape',
+    posterUrl: 'https://m.media-amazon.com/images/M/MV5BZGI3MDg5ZDEtNjU3MC00ZWVlLTk2NjQtNjhiODNhOGUwYjkwXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg',
+    director: 'Jack Gold',
+    year: 1987,
+  ),
+
+    Movie(
+    id: '2',
+    title: 'The Lego Movie',
+    description: 'Aventura de Lego',
+    posterUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOZCvvtsRx3qHwHLMjpOFpKOUBQ9wR7W1GvQ&s',
+    director: 'Phil Lord',
+    year: 2014,
+  ),
+
+    Movie(
+    id: '3',
+    title: 'DeadPool 2',
+    description: 'Accion, violencia',
+    posterUrl: 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMSEhUSExIWFhUXGR0aGBgYFx4ZIRodICAYGh0YGh8aHSgiGh4mIBgYITEhJSkrLi4uHR8zODMtNygtLisBCgoKDg0OGxAQGi8mICUtLS0rLS8tKy0tLS0tLS4tLy0tLS8tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAKgBLAMBIgACEQEDEQH/xAAcAAABBQEBAQAAAAAAAAAAAAAABAUGBwgDAgH/xABQEAABAwIDBQUDBQsJBgcBAAABAgMRAAQSITEFBhNBUQciYXGBMpGhFFKxwfAVI0JicnOCkrLR4SQzU4OUs9Lj8TVDRHSTohYXJVVjxNMI/8QAGgEAAgMBAQAAAAAAAAAAAAAAAAECAwQFBv/EAC8RAAICAQMDAgQEBwAAAAAAAAABAhEDBBIhBTFBE1EiMnGhYbHB4RUkQlJigdH/2gAMAwEAAhEDEQA/ALwooooGFFFFACTa20UWzK33JwIEqgSYkD66in/mjYfOc/VT/ipy7R/9mXX5v6xWcUkVGUmjpaDRQ1ClubVF8ntVsOrv6o/xUu2H2g2d28lhtSwtc4cSQAYBMe1rAPurPJGQ+NKtmbRNs4m4Tq0cY/R70esR61FTdm3L0jHHG5Rk7S/A0ntvb7Fpg4y8JXOEASYTGJWWgGJIn8YdaY1dpezwJ4ij5J/jVZ9pu1lu39wkkhLaUNoTOUQhwk+JKjy0A6VEEDLTI/CnKdFWi6XHNj3TdWaG2NvzZ3TqGWlqK1zhBTGgKjz6A067Y2w1bBBdJHEXgTA1VhWvyHdQrM1RXZqY2rZ+KnP7h/8AdU27atoFHyZsAEEOqM9e4ge8Lc91NS4sz6jQxhqlgg+9c/Ukg7QLKFKxKhOuScpmPwvA057A3kYvC4GSSW4xSI1xARnnmk1nAr5E5TPr1yqddjF7hv1tcnGVfrIUgp+Cl0lO2a9Z0mGDDLJGTdfkWZeb52jS1tqWcSDChEQdOZFcTv3aYcUrw9cIj9rOqi39uCm+uUxq4qfhp5VHlXiyMOIx00HXQZUOdBp+jxy4oz3VZep7SbD56/1f4073W89s3bt3S1kNOGEmOcKMHp7Kh5is3BfjUjt9qlWzHLcyQ1cNrT5OouRh/WaUr9KhTsWs6Vjw7XCTackn28lsr7R7AGC4f1f418HaPYYsONU/kj6ZiqCFekml6hsXQsP9z+xo/YO9VteLU2yo4kiSCIyBAMdYJE+Yr3tXeW3t18NxRx5ZATrp4f6jrVF7lbTNvfW7gJzWlsjqlwhBHpiCv0RXXfHajjty6oq1WsROWRKdPyQB5AVLfxZi/hH816O7irst09oFl889Pwfd7VLdib2212vhtKJVBOYHLXQnz8QD0rOpdPXKnLdfaSmLphaTmHUx6kJI8lJUpP6VJTtluq6LHFjlOEm2uS+9t7021orA8shWEKiORJEycuX0U1DtIsZIC1ZeA+Eqzqnd9dpLfvrhSz7LrjYHghSkD4JFMqfGk8nI9P0WE8cZSk7avj8TRexd8bW6cDTSzjIJAMZxqMic4kx4GvFxvtaIcW2VqxIKgoAaFKikjMjmDVEbEvlMPNvo9ptxKtdRMFJ8CCQfOlm+F0oXt0ASPv7v7aqlv4sql0iK1HpbuNt/ejQWydpN3LQeaJKFFQBIjNKlIPxSaWVE+yr/AGWxnOb2f9c7UsqRxZx2ya9ho3h3jYsghT5ICyQIE6QevjTIO02w+ev9Uf4qZu2+ODbz89Ue4VUBTUJSpnY6f0yGpxb5Nrmi/T2i2MgcQmTAgoOf6/xqT2dyl1CXEGUqAI8j16HwrLmhkctKu7sf2iXbRaTo24QPDEAsj9ZSj+lHKnGVlXUOnLTRU4ttE7oooqRygooooAKKKKACiiigDld2qHUKbcQlaFCFJUAoEdCDkRWWtsNpTc3CEgJSl5xKUgQAAtQAAGgAERWqqynvAf5Zdfn3f21VGXY6PTHWV/QmO7O6lu/si6vHAsutcYohZAGBKSmUjI51Abg/e1n8VX0GrO3N2swjYV2wp1CXl8fA2Vd5UoAEDUyaq26PcUOWFX0VFrsbNNlleXc/evuSztAXG0rodSj+7b1r1utebPQlz5bbLeUVAoKXFJCU4UiISoZ4gT61w7RTG07n8pH923XLdzde8vkrXbNBaUKCVEuJTnCVZYj0UKObJJ4npoLJKlx296Li3C2Hs11DW0LW1U0oKcCMTi1FMFbSsispzGL31CO2e8xX4b5IZQPJRU4pXvCm/dVk9m2yHrSwbYfSEuJU4SAQqMTi1DMGNCKpLtGv+JtK6UDI4hSP0AlogerZ9ZqUuxg0LvVKV3VjEp3MDwJ92H99P+4F5wtpWi5y4uA/1iVNAH9JafWKTbKsm17PvHStPFDjHCQSAogYw4Uicxhen9Dwpit75TSkugSUKSsDxQoLHxSKhVUdTJqPWx5YfVfb/paHbjZtNPW60NISt0OlxSUgFZBaAKiBKok69aiO4eyW7y/at3cXDUFlWFWE91CiM/MVMu3pxJVZK5FDxB8yxFRHsvv22dpMuOuJQgJclSiABKFASTpJyqTXxGTBlktE0vxE++uzG7W+uLdrFgbKQnEcRgoQoyeeajUq7JbFq4b2ih5pDiUtsEBaQoBQ+VwqCNROtRntHukObTuXW1haFlBSpJkKHDbEgjI5gj0qW9iPsbSP/wATP/2qF8wamblo4334K4nKJmpizsKx+5Aui7/LNcHGH9Ng/m5n2P31CVKjI9BXzieNQ7HQybssINSqvuOuwlzdW2f/ABDP963X3eJz+UvfnF/tKrpuVbKevbdtKZJebI6AIUl1RPklCjSTeA/yl7oXXPfxF06+Egs96tv/ABr72S633TYOw/ugVOceT+F3f58tAYY+bHOofspX39n863+2mp9abZYO7nybjI44J+9Yhij5SVTh19nveWdV7sg/fmfzrf7aacvBn02abx5d7b79xdvIf5bdf8w9/eLqT7N3Rt17FVtBRc4w4kQqE911TYyjoBzqI7yq/lt3/wAy/wD3i6n2xtsMDd1duXkcf76eHi72b6lDLXTPyoXdkdTmmsOLa2u3b6FeMLlSZ6inTfRQF/dfn3J/XV/CmOzVLic4zp234y2hd/nnP21Uv6TY8v8ANp/4v8y8uywzsu383fD/AHrtSuoj2Tkfcq3jSXY/6ztS6rTzOT539Ro3l2PaXDeK8SC20FLkrUgJEd5RKVDKBzqt9pvbtszDC3SOSC8J8lOLSk+hqQds+11MWSW06vOBKj+KnvkeMkJBHMFVUfs+zU+6lpAJWswlIAlSuQzIHI5kiotm7SYHODnKTUV7He/cbLrhZSUNFZLaSZKUkyEkkmSPM+dW92Fg/Jbg8uPE/wBW2frFQuz7LtorGbKEfnHUjL+rx/RVzbo7EFlaNW+RUkSsjRS1EqWROcYiY8IpRTu2aNfqscsMcUHdfoPFFFFTOOFFFFABRRRQAUUUUAFZU3kbi7ufz7p/71Vquqs2j2PcV5135bHEWpeHgTGIkxPEz1ik1Zo02ZYp2yl0gc69cIr+9pEqWQhCRqVK7oA8yQKtwdiQmfl5/wCh/m06brdkrdpdN3K7kvcMlSUFrB3oICicZ0mYjUDpUdprnrotPaVx2nNlG1LhKgQfvZB+cChAxDwkEehqP2+0XG04W1qRJk4SRJ0Ex4R7qu7tM3OavHG7g3IYU2goUS3jxiZT+GnDhJX19rwqotobKtmJT8pLiuUtFHr7ZkeNNorxapKCjJXQ8dnW2Fpv7dx65Vw0qXiClmDLTgE5xqU61GL53jPKcMguKLhHQqJWZ9VGujTCECQqT5T1GKuLLyVAyQDED91LxRFZ6yOaXgUF9CQpIEJznx8T150ku2B+DpAHwGdere5KMJ6HLTXrXW/KVDEVxOZThn4yBRRPFq5RfJK+0G+41jslZMn5MpKj+MngJV/3INQRKacOPxEtMYhgbxYcUiMasSojqqn2w3Vt3T3toJZMwAWMYPjPFEDShqyWn1UcUdtETCKtrsTt1C22g4R3CEoSepSl1SvcHU++vI7E1nP7pJ/sv+fVk7u7uotLJFmhU4UEKXEYlKkrXE5SpRMTlkJypqNFep1Syx2oy6lRMHrVn7u9kgurVi5N4pJdbSvCGgcOITE484nWlQ7D15D7op/sp/8A3q093tmfJbVi2x4+E2lGKMOLCAJiTExpJoUR5tdKSSg2iNbj9njeznVPcUurKMCSUYcIJBUfaMk4UjlAB6mqJ3jP8ruEwRDzgI6HGqfKtV1Xe+fZam+ulXKLngFYGNPCxhShljnGmCUhII8JpyVor02p2ZHOfNlD0r2KCbi3A1LzQgc5WnLxzirQHYiRn90B623+dS7dfs8asLpN0u5NyWwrAhLOABREYp4ipgFQA6kHUCoKJry6+EotIq3eloi+uwcibl7XLVxcHPlBB8iKbCJjw/eT9dXLvnuWxtG4Vcof4CsA4iS1iJKcg5BWkg4QE8x3U6c2K37KW1rLf3TAX802/XL+m8/cehpuJHFrtsUpLsV9s9uXUCJlQAjqSAPPMgR4inbtDTh2ldpIzDpPni74PuUKtLdPsnTZ3Tdy5dcfhyUo4WDv6JUTxFThzIEawZyr3vl2W/Lrpdym74WMJxJ4OPNKQjFPET+ClI05U9vFFa1i9bf4qilGr5xISlK1JAByByzJMx61K+zW/cXtO0SpxUYlymfa+9Pa+UDL91Sj/wAkj/7gP7N/nU7brdlps7tq5+WYw2VHBwMOKULR7XFMRinQ6UkmSzanDODSXP0E3bymWLb8tX0CqYZdUhQUkwoGQRqPEdK0fv7uh90m20cfg8NRVPDxzIiIxJioSrsSJ/48f2f/ADqbVkNNqY44OMitXNuXJ0fcHhjP11b3YZduOW1yXFqWQ+ACokwOG2YE6a01K7EDl/6gP7N/nVN9wN0PuY063x+LxHMc8Phx3UpiMSp9mZnnQkQ1GeE47Yr7EpoooqRjCiiigAooooAKKKKACiiigApNf3KW0FSjA60oWoASdKrLtJ3rSGSgeOXXlHgPGgERXe3eviSgrxJBnU59CetV7tO+LqpUNNPL6q5Xt6twkmPqHhSVK411POkTPabkiR1r53gB4mubznMiht4GQff0oFYoU4RAPnQHQrUxXG473P7eVJ20E6UBY4FRGeXmKk+498jiHipCzkRijOIyz8QDUKacUk077OucwQJI+3Kga5NWbJuOI2FARlSyo3uFtFL1oggQoABQ8RzHhVdb7dpj6nXWLVQbaSop4ifbXGRIVokE6QJ8aUpKK5LtNpZ6ie2Pjuy47i7bR7biE/lKA+k16ZfQsShSVD8Ug/RWW3NoqWZUSVHUkyT5k5mlVltd1pQW2tSCNCkkfRUPVR1/4JHbxk5+nH5mnq8uLCQVHQCTVd9nG/bl078lfwleElC4gqIzKTyJjOR0NTrbTCl27yEKUlSm1BKkxIJBgiQRNWJpq0cbUaeeCeyZVO3e1pClEJQtKASmCCDlzIB6EZT9VQ5O+RBlt5ap+epRnlP4vlEVG7tPeKFjMKzPj7J18hlXy12e6ThbbJk+0Mvp1/0qDkhKDLE2BvM4ZLhCiDCgVE5H5p5SOXvyNfdubeDaSphUrSeIggarJ9o5ZxpnynrXjdzcZRh59wyc+GMo8wNOVONzs5qICBAkaeNVSyUWxxWWvsO/+UW7L39IhKiOhIzHoZFLqj24y/5KlHzMvQ/Y1Ia0J2rMslToKKKKYgooooAKKKKACiiigAooooAKKKKACiiigAooooAZt7Xyi2cUkwYyrN+17gqUcZMzkDFaI31Xht1Hw6TlWb9uIIOYjUjOecz8aTJRG67wpyCgY1pG2NVGvCmiTXxABTrzoEDzs15t8zXS3syswOdOm0NgqbQFJnxqLmk6JKDasRkwAeY+NJWHINekIietc1IzqZEVYpkRSrZxhQIiOlNzasiaWbPGdIaLk3S2zh2fdOoGBTTK8MaSRCfjFVraWpUtxpUDAYCvpB65zVg7PtkjYVwpIhbi22zykKdbT6ZGoLsraTXyx8KUBidXhJMA94xFKky6OaeOKcHTt/p+4jat+9GlKUsqIECJ0yma67QhtS4M96B44tI8KeNnoQ0C48tCTgOBKlAHTkDmSfKq4QXNnW12vlGEFidWrY3boXpauGXgc0uJJ8pEj1BIrTZrKGwlFS8I1xgD1IitTbSx8FzhH75gVgynvQcOR1zipx4tGfqEvUxYZ+Wnf+q/WygN/NicK9eUkQMQMe6T76Wbt4VJw6K0z6zll6p99LL3bHyjE5c5qQAhRSIzhfeWB4oTBGWZ5io3st+4cI4KUjCSccdBGQOZ5Cs80pcopxPbaZaDIgAHpzmOfjFJbhoYhlkTPxpj2Bd3L7ZUVJQtDkKOspMH06+pqT3DCFAGChYjOdfHPLrpVEm7qiyqO9hthTAUlCQVEokHpJBA8Y+MVPKo7evjhTKrVKluh3QQcoPzssM4ZpZYdtS0kouLdONJhWHEjz1Cv3Vtw21ZizpJ0XLRVY7H7XG1EG4QhLaj7TaiVNjkXWznEEd5MznkKsq3fS4lK0KCkqAUlQMgg5ggjUGrqKDpRRRSAKKKKACiiigAooooAKKKKACiiigAooooAr7tWvVJZwpmc4HXrPXKqJeZW4dCSNSK0tvjs0OskmMuoms8bWu0J4gbnXPp1y+mkyUSNXIw5TSZlBUoDqa6vma97PIC0z1pN0gXLHm1S6ysBLeLnmNdMhnPOpO1dqcQsLZwFIzE4h0kEaiamO77KHGUkhJMcxSDgpcQ+tKknNKRChloR9VY5Ss3xjtKt2mylKoCVJIJnEIGvKmxQq8r/dK1eQHVymQCQk5TrkM+dU/vMlLdw4lAATOQHKtEJ+DLOHkbEinK1aUIVy8Ka29MqetjXASSkzBGdWsqRPdnbXW5si9aUky2WnQvqA40T6gJmons8Lat3LctWym1Ey4psKX4EH2gelWxuRsZm52c6hs5utuIPgVAgT4yUmqN4ix3DIjIjQ5ZQfGluUe5fjwvLwvfkd9l2UtFSiopxgTJkDMAgjzFONxbBLBZdtrQNogl1CCHVdBi1JVzMxr5Ug2bdKSgogFJ1r1tC5WtIbKu58fKedQhNeTqa3p8pKDxLwl+469nWz+NfW4wwC4Fka91Erj3JitJ1U/YnsYy5dqGQHDR5mCo+gCR6mrYqcO1+5j6jUZRwr+hV/t8sqPfDdF9Fy6pltS2HkrxKBENSCoyNclCR4KgaVGtgrCFqaKcJJif2o8Oc+XWtAETlVD702CrS7W3kU97BnnpkP1VD1FVZIJLgpw5W3ycd1dsNpW+2cUrUShKUlRyyExlyGfjUvauHCgJcSQF+xMEj8RcEicpHh4g1Dd33hxSAlsEaGCSec5EfTUsWSqFYydMiAB9fTrVDo0tj5ubaIW44HEhXcIzHzjBjpIyqj97diqsL+5tWFhKEKSUBap7qkpUJPhijPp61eO418k3DjSdeFiP60R6Aj3iqx7Y923Wr1d5chS7d5aUtrQsYkgI/m8KtIwkzBHjJrVg+VGDPzMabphwtxcMspUIQhxpSSFeJwkgmJz+ira7E75SrJbKjPBchH5CkpWP+4r9IrP9vetokJKo/BxEHlnJAGfLTTrVkdiG2Vi/UyJKHUHF07mJWPwzUQPAxVzfBVGLZfdFFFRAKKKKACiiigAooooAKKKKACiiigAooooAYt9m3FWbqGhK1pwjwnKaozZm4T7plSSBGZ5SJmfdGfStGOJSuUkz1E6fupq3iUGLVxaEewgqCUjWATEChjTMs7csOA6pEhWExlyjllr/AKU04u8COX1U7XB4uN1xeJalHIHOTmVKrqNk4FI4vdkgkRnhyjw59edRYyabvbVUhtKkjEIyBMdOefjTm3dJzV8mZJOuF1M+4wZ9KhuyrktKJQOI2dU9D1E+6pts3aLTuSWFYgNcMfHSsTpHRi7XI4X+0kpaK1dxITJxRkB5E1SO0X+KtbmfeUSJ5DkPSp/2jsrDQxKgSJA0yzA8arycuo+ircXuZ878BboqZbp7qO3spbTkB7Ry+0Uw7H2W5cqS2wnGsqggHScgfLxq/tiNWWxmEqddCS6rDIlQKgIIyyT0MxnWhGdJvhdz72W7vu2YfDhGFShhT0wyD6Ez8DzqmO0Rptrat2hsyniYvVQClgeSyoelWNvh2tEIWmzbwq04i4JHilIy0mCSfKqO2jdKccU6faUSSZ6586UkmqNWNZNPJSku5JrFPdJ6VzKgVeFMdvtRcYadbeAAcWNR5JP1g5R76q9NnbXU8TpRtv2SNLbhFv7n23Cgp4YkjmoSF+uMKp/qhNw973LZC2ysAAyEjTMAZA6+zHpPOp4O0Lho4jwSExOsKV4JBOdaF2PN5t3qPd3v8ybX9+0wnG64htPVSgPp1rPnavt9m6vOJbqDiAhKQtJ1UM8SfeB4x5Uw75b2v7QuFOOqwoBhttJyQnLKYknmVRmfAACPNYgru5jn9vrqM1a4IwltfJKNhbaaQpKlmCNZ/jUyY3yYfUGkqIUrKcJge4RVebLtmXTC3EoP4xwg+BJgD6KlDOxG0pStt1Ep0hYP11lkkjbFuXkk4edtHku26khSRglwSlQVJIVBBGaU5jmRrpVc9o+911tB8B9IbS13UtJkhJ/CUSfaJ66REdTNL7aTS2gp1xJy9nEATHIpBnWcx/rBNpNB0hY9qBmRzj2dc0+dX4+ImfNzIjrNsT1jwq6+w/ZDLC1XDtyxxVgNNNJdQpSQTJKglRhSsKQBrAM6wKeedBKiU4YMRrh6x1kyadtmPvrVjbCIThk56xrkqSRHtDLKp2VW0qRrSioF2YbxcVlTb76C4HIQkk4oKU5d7UFWIAenQVPacXaE1TCiiimIKKKZt5N57exRieX3olKB7SvIchkczlkaAHmiqOu+1S7XcpWn72ymVBsIJ4gE91SjmJPdkRGpGUFdvTvy2+8Fsru0ICAIQ6WwTJMlKUKz7wEzoBQBcdFFFABRRRQAVXvaZvC6hpxNusoDKQ464kwc5AQnLM+PKRUm342kq22fdPoMLQyspPRUQk+hINZWbvnCFArUoLyIxHMZzizz5a9KaQiWbhb53LD3FUlbgKjJCZmYlJMSRpr51bN1vwtwFKGUwfn/AMKpXZm3FMJCEtjCOoJ+ipY3twGzNwpGAlCyB4pkCJjWKpyvIjTijjf1ITvFt5L7q1IZbRJIhIyy5joVGT7hXjZTJcVgWtRSEqWVSSZ7oB8TiKY+vKmVhM59NKlW66FYvZKkDDxANSO9A8iqJ9OkhyfwsrhzJDpuvs95aOJwWyJI77hRJEgkAIVzHOPdUt2bavxqy35BTnunCAfQ0oaLbDIJOpKj4qUSowPM5DpFIdsbWU0yXMOHFkgHUnr4RWTu+EbO0eWRXfy5QVBsKU4oe04ogmeiQISkDPQCTrMVAnWIOudPrqySVqzP10n2Ha8W4bSU4pVmOvPPwrVW1GNtzkSbdDdR0YLgxiOYBHI9fEj6ak22dlqWlR4TaQRBSknCdM4jIwkaVKLRqEgVw2isBJqn1JGuMIppruUu8wsSmNOf21PlTSu2IOVP22iC6vpSFsCeVXXwbdqyVYnt2iNQPh9dL3rghHIev7q+qVlED3U33bsfb1qNWW7vRi6PLdypKwtJMiR7wc/QwfSlIdW4rEtRUTqTnTc1JNO9qKsOLklvm2d02ySMwKSXVspKTgOWpT+7r604tpmlGCmR2pjPs6yJGOddOc+fSnFLXvpA88WHNPvajJHTqR+6nZlWL2E4kjVROFI9TrUqT7Fa+F8nFInl8K94aVLaHI0lWoiollDXtq0T/ORnlijmOvnSZvaJQRwSRlnkOcCANKeHiCMzTIzbK43DbQVlfsJQJJ8B9fhSIyRIdjh1nCsuqAdBSVJGYBgFSfFJk8pIrT2z79p9AW0sLSeY9+fQ5jI1mBexVJah247yDmlJPCZGRUlax7bh6ICojM5gVfHZju2qytTjcQ4p0hctkqQEwMASVATkSZgagcpIk0yN8Ewrw66lKSpSglIEkkwABqSToKZd6N67awRidXKvwW05qPpyqiN8d+7raCimS20JhpByP5Z1UY5fRUxE9327XEty1YwpWheUMh+QDr5nLwIquy4m5Qq4U8p1ZPfcVICTHsgKz0jM6jyzaLXd5bqOI4UssHLiuSJzBPDQO8tWogZdTStW7zaUuutl1puDwEK7ynVoSDKxAAJxE4YkAmKaEIbVhZJK8xmdSADyUnxHIn3UjFw0mRCXPxiSD5ZZHrI615duOM1PE7xMBtI5CMSlnQJzkcsvM19t2LQJHFedxH+jQCmNMiognMHPShsRsKiiikSCiiigBq3r2UbuzuLYEAutKSknQKI7pPhMVk+/slMOKZdC0rbOEpKSlQORz1EeRI5iQZrT3aBvW3s+1WrGA+tCgwiMRUuMlEfMSSCpRyHmQDnLbW2nbwg3F1jdAiSgCfDEhAz8eWkxTugobrIJWtKA4tOJQBJgBIJzJJGUCTU034Qzb2TLLC8aSSkKxBUjNSiSMiZPxqHttYRGGep19ZFJrwwTnlrHjln5wKqn8TRbB7UzzZirE7OLeeMeRCE/tT9IqvLUZ+X8KsPdMm3tlXJPdWFg+GGQlXoQR6moz+UMfzEl2O2XsClZhACU+YAClepBjw86h29F8bh84TLaJSny5q9SPdFLhvEG7NfDMZBpB5lR9pfkEgx6daY2nghhR/CUMvXJMe+fWjDDyTzS8DYWSvup51Jdw1WrSlKW82lwnCkKUBAy68yfoFR5y+S0nhtmXF+0r5o6DxOefIRzOSnZGxSuDGVSyNVRDGndlwhcCo9vLeYUHPlUdttqKsoAJU0PabmYHzm+kfN0PQEzTdv5tpJQOGqQoCCOYOc+6s+xt0alJJWyJ3d1iWVdTXu3VTQHTrTnZeOtaJRpF2nzqUqQvdGXpTNcrk053bvdplSZNKIa7JXA4Wop3tUcqarbITGXOOVL0uZCCPxV8p6H6KZz4jhauAjopORH28K9NqCtPL402m4wkLiOSh4DUeYHeB5ia9s3IBUnmTPvp2SsU3iMaVQPAeA/eaT7CuVIWm3cySScBOUE54Z6HP1PjTgzEUm2pbcRGQzHvoTojONim7u2wcDcrUNQ2JjzjIepri44hRKcWgEnQZ5iDz/gaj1txlANt4lYZlHL8pXTzNSKw2Ow+wh9xSkuYyFzrIkcNKSJUdDlp1FTasrUmuBvfdWkS0RiSrmArMHSDkc+or1ab0KCF45lR72EkKdJkq4i5nBJ9kZZ007QcQXHAziSgqPdxTpGZPOTPPpma52VljVmQEgGTr5QBqfDwpdhN2OLK13jiEuYktAiENp0TIBCMoGU5npVybw9o7dsyiz2cO60hLQdXJgJASEpBzUqABJ/jVTsKCUlLYIH4RJnnHfUNB+Knxkia7XB4R++EhWkCAqQZBBSSADMYSJpiOxQ/duyZWtZkyqCQTBViV3RnqmZ0z5VI7HYjVscK0puHukww3h0KyfaOY9nLI9Iqudq3RdgQEhMkJ0A5nLr8aHNruraDanICfefPmYj4556lgS/eLeFKVFQXx3h/vCIQ3yhtOiY5c/fUQe224QpJJViUFd7koBSZA5EhUdchSVlpThASJ8dAPL7TTh9z0twmMbh5dPt9pofI06EVsTgKQMjrlrGcqPh0q2N3exhy6tmn7i6LSlpBS3wseFB7yQcShhOZOGMp6zUK2bsdKSA4RjX3UoxBOuWZJgetWjZ793rCeG66l5QMhblspCo5A8GUGM8xToVlvUUUUhhRRRQBmftbu+JtS5xSCg4QCZhKG0YQOgUtRyGkk9ahFo7gOmLOrc7a9xrl28Td2rC3kuIhYbGIpWmcyNYII9QfCqju9nPsrSh1pxpZzAcQpBImJhQGU8/OoyJJjo1eskyU4Tyy/dSrCy4PbST+MfoxVHiYOY5kT1jpXYRVZbfuh8Gx4kpAgjkT+8jnTnd7ScNp8kDZSAnCFBUznJkQNfrqKtqjNJIPgY+inC32k6mO9i/KE/HX40+4KkenQpSW0BKoQIOR9onM+4D3VydWpSw2kGeQOU+Aml//iPBILKVTlOIiPLI9evKvd9t+2dRJtlJdBCkKSsQCNZyGRGUQafPahNR72dNi7AVONxJBGoPKnZzbzLJwJBKeahp/pUcd3jeehC1QgCAkc/FR1J9w8KSXLojOo7fckpf2nXb+2uIqU6UwvLUsJBMhOQgzqZ+un3ZuzEOzxFhPQciehPX99Ne0rQIkDPvqSPIRn61KNIhK2rEJREZU6WEQa5MwRXdtI1pSn4Ohp9Jte+7E1+rpSK31Ndr45122RZ4zT7Iy6i5ZKR0t09AoHqCKVhtWoE9YET+Un2VehBqQ7I3eacVhUpY8iPrBqU2nZ+hSSUvqH5SAr6CKhviV+lJdyuWW46x0P4PSJ1HgfHXOm5JOI4Qeg8AMtamO9GxHrNJK8KkHILSeZ0BBzHxFQ7ED873/wClSu+xXLgdbR/AIUZPQZ++l1kXXnQ022pSjqEiSnzkgD1IpksbdRcTgBSB7RkZCQBmdJJA8yKddrb0OJR8ktW/k6Bk7h9taueJZJJHjlOuUxUkvcHN+Do3tUMCUqxOYilbKhGhI/AMhQBGYUeY5ZMN7evvqkuKVIggExBM4R1Gmusc69bIaKVhUEqn3ylQP1fGlRbxoDaWsGEypQViKo6RqNNM6mViW0tmUoxKONwyEoTy1AJPxAGtKLTZ6plRAIkTICQQJKVkezPh4dYpZ8lQyCFAEmRh5lJiFTkWz4Zk+OSglv3VqiTJiQkE5DTPp65mDQB0vNppa/mgeYCjEgGDhEDISOcnyprs7wlRKtRmPDypSWioTyn3csI6gQAPL0rp8nShMFMK5EiMjz/jS5AanGiT1nSNSenifrrvs7ZwWspUtII1TOZ8oyPoa5LTjKiNJz5AEzoPTIUnzQZEgj0I8ctKEMmQsylENgDoNCrwn8H7aa1x2hdtWx+9d9ZAONScJTIzASdCDIk+cnUsNltRbKVIAidJzg64o5kgjwyGtI7palHEtUk9ddAQfKCIqV+xGhSNoEuBayTn1M1IWdpOR97dATyBUfqBn7DlUd2bsa5uZLFs89h14Talx54QYpxRuntID/Z95/Z3f8NKxmwKKKKBhRRRQAVSv/8AR1jlZ3A5Fxs+oSpP7K/fRRQwKttdqpwJQtuQiYjx1Odc7t23OYSoHy/jRRVTiizexuU6BoT60IuKKKKCwW9Mfb7cqd9nXDIQpKmUrJGpOY8RGY94r5RTugS5Gx11IUcOQ5Z0JfBPj1P1dKKKHyCfIpXeAJAOgyjTp/D7Gke0boKIKRAA5559fgPdRRREJPg5su+FODZymiipziqL9JmnuqxvuzJp43bHOiiqpfKOXOUme7LvEdgZGp4m9Q2nDik+Xx8aKKyS4Zf37lZdq22OIpthJyT31x1OSfhPvFQm1X3hRRWyCqKOfldyY5FxJBEZc8q6MWQzKhAzgDMk5e/n105ZGiirCsUpSTIACUiQeYBEZLgzp08JNfHrsJJSzOuSlDNM5dyc0DXx8tKKKYCC5eSgSTrp1I8qTW94VYhA09Y6UUUgHIu5UheYGeGMiSSM58vCiihgSbdndxBtw8HQhaszOFWUmIkZHIzrnPSmbaGz1tOFOELJ7shMqkj2hAz9ZEUUU/AE77Oex5x7DcXwU03kpLYOFa/ZV3ubY1TriOfs5E3Tszdqzts2LRhsxBKW0gkaZmJPrX2igB1FFFFAz//Z',
+    director: 'David Leitch',
+    year: 2018,
+  ),
+];
+
+homescreen
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:myapp/entities/movie.dart';
+
+class home extends StatelessWidget {
+  const home({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+
+      body: ListView.builder(
+        itemCount: listmovies.length, //cantidad de items EN LA LISTA
+        itemBuilder: (context, index){ //constructor de cada item (sirve como un for para todos los items)
+        return ListTile(
+          title: Text(listmovies[index].title),
+          subtitle: Text("Director: ${listmovies[index].director}"),
+          leading: Image.network(listmovies[index].posterUrl, 
+            width: 100, 
+            height: 100, 
+            fit: BoxFit.cover
+            ),
+          );
+        }
+      ),
+    );
+  }
+}
+
+loginscreen
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
+class login extends StatefulWidget {
+  const login({super.key});
+
+  @override
+  State<login> createState() => _loginState();
+}
+
+class _loginState extends State<login> {
+  @override
+  Widget build(BuildContext context) {
+    return const Placeholder();
+  }
+}
