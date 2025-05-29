@@ -1,1 +1,78 @@
+casi todas las apps son listas de cosas
+visualizar una lista en pantalla
 
+como interactuar con listas en pantallas
+cargar informacion de/en una lista
+etc
+
+las listas estan compuestas por items
+los items pueden tener contenido
+
+la lista de items sale de una class de objetos que tenga la lista
+
+list<movie> pelis --> lista en código (movie es la class) (pelis es el nombre de la lista)
+el objetivo es convertirla a una lista visual
+
+cuando se convierte una lista en otra cosa se llama mapping
+convertir una lista de un tipo a una lista de otro tipo = mapping
+
+COMO FLUTTEREAR:
+nueva app
+
+movie_example
+se hacen el router, screens, entities, instalar libs
+panatlla movies_screen.dart 
+stl class MoviesScren
+
+router app_router.dart
+final appRouter = goRouter(routes:[
+
+  path: '/movies', builder(blabla), => MoviesScreen()
+
+]
+);
+
+carpeta entiteis
+arhivo movie.dart
+
+class Movie {
+
+String id;
+String title;
+String description;
+String posterUrl;
+String director;
+int year;
+
+//copnstructor
+Movie({
+required this.id, 
+//etc etc
+)}
+
+ahora hay que crear la lista de peliculas
+sigo en movie.dart
+
+final List<Movie> movies = [
+Movie(
+id: '1',
+//etc
+),
+
+]
+
+vuevlo a moviesScreen
+
+hago scaffold
+
+hay que hacer el formato de lo que se quiere mostrar (por ejepmplo, title + id)
+
+se usa [EJEMPLO BOLUDO]
+body: ListView.builder(
+itemCount: 40, //cantidad de items
+itemBuilder: (context, index){ //constructor de cada item (sirve como un for para todos los items)
+  return Text("Movie Item ${index}");
+  }, 
+)
+
+prime
