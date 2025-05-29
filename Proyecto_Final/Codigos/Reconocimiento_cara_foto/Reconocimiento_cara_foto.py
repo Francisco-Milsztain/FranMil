@@ -14,7 +14,7 @@ detector_cara = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
 # Detectar rostros en la imagen. grises va a ser la imagen a analizar
 # caras va a ser una lista de rectangulos que representan las regiones donde OpenCV detectó una cara
 # cada rectangulo guardado en caras tiene 4 valores, que indican la posición y tamaño.
-caras = detector_cara.detectMultiScale(grises, scaleFactor=1.3, minNeighbors=5) 
+caras = detector_cara.detectMultiScale(grises, scaleFactor=1.3, minNeighbors=5) #detectMultiScale guarda los valores de las coordenadas que están alrededor de la cara
 
 
 # Dibujar un recángulo alrededor de la cara detectada
