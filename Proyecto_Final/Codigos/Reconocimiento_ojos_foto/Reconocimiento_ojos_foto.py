@@ -1,7 +1,7 @@
 import cv2
 
 # Cargar imagen
-imagen = cv2.imread("imagendecara2.jpg") # Cambiar a "imagendecara2.jpg" para probar con la otra imagen
+imagen = cv2.imread("imagendecara.jpg") # Cambiar a "imagendecara2.jpg" para probar con la otra imagen
 altura, anchura, BGR = imagen.shape
 print(f"Dimensiones imagen. Ancho: {anchura} Alto: {altura}")
 print("")
@@ -37,7 +37,6 @@ print("")
 
 # Recortar región de interés (ROI [Region Of Interest]) para los ojos
 cara_gris = grises[y:y + h, x:x + w]  # Se extrae la parte de la imagen (grises) en la que hay una cara
-cara_color = imagen[y:y + h, x:x + w] # Se extrae la parte de la imagen (color) en la que hay una cara
 
 # Detectar ojos dentro de la ROI (dentro de la cara)
 ojos = detector_ojos.detectMultiScale(cara_gris, scaleFactor=1.1, minNeighbors=10) # Se guardan los valores donde se detectaron los ojos
@@ -46,15 +45,15 @@ ojos = detector_ojos.detectMultiScale(cara_gris, scaleFactor=1.1, minNeighbors=1
 # Rectángulo verde para cada ojo dentro de la cara
 for (ox, oy, ow, oh) in ojos: # Se usa for para que se dibuje un rectángulo por cada conjunto de valores de la lista ojos
     print("Se detecto un ojo en ")
-    print(f"/INICIO/ X: {ox} Y: {oy}")          # Se imprimen las coordenadas iniciales de los ojos
-    print(f"/FINAL/ X: {ox + ow} Y: {oy + oh}") # Se imprimen las coordenadas finales de los ojos
+    print(f"/INICIO/ X: {x + ox} Y: {y + oy}")          # Se imprimen las coordenadas iniciales de los ojos
+    print(f"/FINAL/ X: {x + ox + ow} Y: {y + oy + oh}") # Se imprimen las coordenadas finales de los ojos
     print("")
 
-    cv2.rectangle(cara_color,         # En que archivo se dibuja
-                  (ox, oy),           # Posición inicial de dibujado (para cada rectángulo)
-                  (ox + ow, oy + oh), # Posición final de dibujado (para cada rectángulo)
-                  (0, 255, 0),        # BGR 
-                  2)                  # Escala
+    cv2.rectangle(imagen,                     # En que archivo se dibuja
+                  (x + ox, y + oy),           # Posición inicial de dibujado (para cada rectángulo)
+                  (x + ox + ow, y + oy + oh), # Posición final de dibujado (para cada rectángulo)
+                  (0, 255, 0),                # BGR 
+                  2)                          # Escala
 
 print("----------")
 print("")
@@ -64,9 +63,26 @@ cv2.imshow("Cara en gris", grises)
 # Mostrar resultado de detección
 cv2.imshow("Cara y ojos detectados", imagen)
 
+print("Presione 'p' para ingresar coordenadas del píxel a editar.")
+print("Presione ESC para salir")
+print("")
+while True: # RESPUESTAS A INPUTS
+    cv2.imshow("Cara y ojos detectados", imagen)
+    key = cv2.waitKey(0)
 
-print("Presioná la tecla ESC para cerrar la ventana.")
-while True: # Salir del programa
-    key = cv2.waitKey(1) # Espera 1 ms y refresca la ventana
-    if key == 27: # Código ASCII para ESC
+    if key == ord('p'): # Si la tecla es p se piden las coordenadas
+        # Pedir coordenadas al usuario
+        ingresox = int(input("Ingresa la coordenada X del píxel: "))
+        ingresoy = int(input("Ingresa la coordenada Y del píxel: "))
+        print("")
+
+        # Dibujar en la imagen principal
+        cv2.rectangle(imagen,
+                      (ingresox, ingresoy),
+                      (ingresox + 1, ingresoy + 1),
+                      (0, 0, 255),
+                      2)
+
+    elif key == 27:  # Si la tecla es esc se cierra el programa
+        cv2.destroyAllWindows()
         break
