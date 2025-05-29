@@ -110,7 +110,7 @@ itemCount: movieList.lenght, //cantidad de items EN LA LISTA
 itemBuilder: (context, index){ //constructor de cada item (sirve como un for para todos los items)
   return const 
 
-ListTitle(
+ListTile(
 
   title: Text("movieList[index].title),
   subtitle: Text("movieList[index].director"),
