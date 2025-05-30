@@ -1,9 +1,10 @@
 import cv2
 
 # Cargar imagen
-imagen = cv2.imread("imagendecara.jpg") # Cambiar a "imagendecara2.jpg" para probar con la otra imagen
+imagen = cv2.imread("imagendecara1.jpg") # Cambiar a "imagendecaraX.jpg" para probar con otras imagenes
 altura, anchura, BGR = imagen.shape
-print(f"Dimensiones imagen. Ancho: {anchura} Alto: {altura}")
+print("Dimensiones imagen:")
+print(f"Ancho: {anchura} Alto: {altura}")
 print("")
 
 # Se convierten los colores de la imagen a una escala de grises
@@ -16,7 +17,7 @@ detector_ojos = cv2.CascadeClassifier("haarcascade_eye.xml")
 # Detectar rostros en la imagen. grises va a ser la imagen a analizar
 # caras va a ser una lista de rectangulos que representan las regiones donde OpenCV detectó una cara
 # cada rectangulo guardado en caras tiene 4 valores, que indican la posición y tamaño.
-caras = detector_cara.detectMultiScale(grises, scaleFactor=1.3, minNeighbors=5) #detectMultiScale guarda los valores de las coordenadas que están alrededor de la cara
+caras = detector_cara.detectMultiScale(grises, scaleFactor = 1.3, minNeighbors = 5) #detectMultiScale guarda los valores de las coordenadas que están alrededor de la cara
 
     ### DIBUJO ALREDEDOR DE CARA ###
 # Recángulo azul alrededor de la cara detectada
@@ -61,6 +62,7 @@ print("")
 # Mostrar imagen en blanco y negro
 cv2.imshow("Cara en gris", grises)
 # Mostrar resultado de detección
+cv2.namedWindow("Cara y ojos detectados", cv2.WINDOW_NORMAL)
 cv2.imshow("Cara y ojos detectados", imagen)
 
 print("Presione 'p' para ingresar coordenadas del píxel a editar.")
