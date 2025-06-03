@@ -9,13 +9,6 @@ class Confirmacion extends StatefulWidget {
   State<Confirmacion> createState() => _MyWidgetState();
 }
 
-DatosUsuario Usuario1 = DatosUsuario(email: 'francisco@gmail.com', password: '12345',  nombre: 'Francisco', direccion: 'ORT Yatay');
-DatosUsuario Usuario2 = DatosUsuario(email: 'javier@gmail.com',    password: '54321',  nombre: 'Javier',    direccion: 'ORT Belgrano');
-DatosUsuario Usuario3 = DatosUsuario(email: 'pedro@gmail.com',     password: 'abcde',  nombre: 'Pedro',     direccion: 'ORT Tigre');
-DatosUsuario Usuario4 = DatosUsuario(email: 'fabian@gmail.com',    password: 'edcba',  nombre: 'Fabian',    direccion: 'ORT Uruguay');
-DatosUsuario Usuario5 = DatosUsuario(email: 'tomas@gmail.com',     password: 'javier', nombre: 'Tomas',     direccion: 'ORT Polonia');
-
-
 class _MyWidgetState extends State<Confirmacion> {
 
   TextEditingController ingresomail = TextEditingController(); 
@@ -23,51 +16,16 @@ class _MyWidgetState extends State<Confirmacion> {
 
   void confirmar()
   {
-    //USUARIO1
-    if (ingresomail.text == Usuario1.email && ingresopass.text == Usuario1.password)
-    {
-      context.go(
-        '/verif',
-        extra: Usuario1,
-      );
+    for (var usuario in listaUsuarios) {
+      if (ingresomail.text == usuario.email && ingresopass.text == usuario.password) 
+      {
+        context.go(
+          '/verif',
+          extra: usuario,
+        );
+        return; // Sale del método tras encontrar un usuario válido
+      }
     }
-
-    //USUARIO2
-    if (ingresomail.text == Usuario2.email && ingresopass.text == Usuario2.password)
-    {
-      context.go(
-        '/verif',
-        extra: Usuario2,
-      );
-    }
-
-    //USUARIO3
-    if (ingresomail.text == Usuario3.email && ingresopass.text == Usuario3.password)
-    {
-      context.go(
-        '/verif',
-        extra: Usuario3,
-      );
-    }
-
-    //USUARIO4
-    if (ingresomail.text == Usuario4.email && ingresopass.text == Usuario4.password)
-    {
-      context.go(
-        '/verif',
-        extra: Usuario4,
-      );
-    }
-
-    //USUARIO5
-    if (ingresomail.text == Usuario5.email && ingresopass.text == Usuario5.password)
-    {
-      context.go(
-        '/verif',
-        extra: Usuario5,
-      );
-    }
-
   }
 
   @override
