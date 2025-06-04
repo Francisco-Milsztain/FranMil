@@ -1,6 +1,8 @@
 SE DEBE AGREGAR: [*1] A LA MISMA CARPETA DONDE ESTE EL CODIGO Y LAS IMAGENES. 
 [*1] ESTA GUARDADO EN MI DRIVE BAJO SU MISMO NOMBRE
 
+https://drive.google.com/file/d/1x1-qr5OTWEM7HcJ1P22MEBYxgUf7b0KU/view?usp=sharing
+
 *1:
 shape_predictor_68_face_landmarks.dat
 
