@@ -83,6 +83,7 @@ onPressed: ()
 -------------------
 
 fuera de screens -> providers.dart
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 StateProvider <int> counterProvider = StateProvider <int>((ref) => 0); //el 0 se puede cambiar por el valor que quiera. counterProvider es el nombre del dato tipo StateProvider
 
 -------------------
