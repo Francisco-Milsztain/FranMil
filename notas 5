@@ -1,0 +1,61 @@
+siguiendo con notas 4
+como hago para hacer click en algun elemento de la lista, para que ahi pase algo
+
+a la parte de listView, listTile
+se usa onTap o onLongPress
+
+abajo del ) que cierra lastile
+se pone 
+
+onTap: ()
+{
+  [PONGLO QUE QUIERO]
+
+  por ejemplo
+  context.push('/pantalla2', extra: blablabla)
+}
+
+-----------------------
+EMPIEZAN NOTAS 5 REALES
+-----------------------
+
+stl = no tiene estados
+stf = tiene estados
+
+el estado es una foto del momento. las variables y elementos en un momento determinado.
+si necesito que mi estado cambie uso setState(), y ahi saco otra foto
+
+dentro de una pantalla stateful
+se crea una variable int counter = 0
+
+en el scaffold bla bla
+
+conto child: text('counter: $counter')
+
+
+fuera del body pongo un boton que sirve como un boton cualquiera pero afuera del body
+floatingActionButton:
+onPressesd() {} bla
+
+---
+
+cuando una variable se actualiza en pantalla1, luego voy a pantalla2, y vuelvo a pantalla1, la variable se reinició. no queremos eso. queremos guardar el estado de las variables
+una pantalla tampoco puede acceder a variables de otra pantalla.
+
+se usa un gestor de estados para superar estas complicaciones. son librerias. riverpod es la que vamos a usar.
+inicialmente se deja de usar stf y se pasa a usar consumerwidget.
+riverpod saca las variables que se guardan por pantalla, y dejan de depender de estas.
+
+pub.dev
+flutter_riverpod
+
+terminal: $ flutter pub add flutter_riverpod
+NO SE SI SE USA EL [ $ ] O NO
+
+en mian se agrega
+
+runApp(ProviderScope(child: MainApp( )));
+
+se basa en providers, proveedores de estaodos.
+
+abajo de class extends y arriba de @override (donde normalmente se ponen las variables)
