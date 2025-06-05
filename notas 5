@@ -54,7 +54,7 @@ NO SE SI SE USA EL [ $ ] O NO
 
 en mian se agrega
 
-runApp(ProviderScope(child: MainApp( )));
+runApp(const ProviderScope(child: MainApp( )));
 
 se basa en providers, proveedores de estaodos.
 
