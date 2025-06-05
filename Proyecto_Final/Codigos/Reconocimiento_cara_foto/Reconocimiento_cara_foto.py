@@ -1,7 +1,7 @@
 import cv2
 
 # Cargar imagen
-imagen = cv2.imread("imagendecara.jpg") # Cambiar a "imagendecara2.jpg" para probar con la otra imagen
+imagen = cv2.imread("imagendecara1.jpg") # Cambiar a "imagendecara2.jpg" para probar con la otra imagen
 
 # Se convierten los colores de la imagen a una escala de grises
 grises = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
