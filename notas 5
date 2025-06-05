@@ -58,4 +58,36 @@ runApp(ProviderScope(child: MainApp( )));
 
 se basa en providers, proveedores de estaodos.
 
-abajo de class extends y arriba de @override (donde normalmente se ponen las variables)
+
+COMO CODERAR:
+
+-------------------
+
+screens -> pantalla1 la hago ConsumerWidget
+voy a hacer una variable dentro del build (normalmente van afuera)
+
+@override
+widget build(BuildContext context, ref)
+
+final counter = ref.watch(counterProvider) (ref.watch actualiza siempre, si pongo ref.read solo se hace una vez) 
+
+hago un elevatedButton
+onPressed: ()
+{
+  ref.read(counterProvider.notifier).state ++;
+},
+
+
+--------------------
+
+fuera de screens -> providers.dart
+StateProvider <int> counterProvider = StateProvider <int>((ref) => 0); //el 0 se puede cambiar por el valor que quiera. counterProvider es el nombre del dato tipo StateProvider
+
+---------------------
+
+TAREA: una pantalla extra para agregar peliculas a la lista de datos (en mi caso juegos). desde esta nueva pantalla se deben meter todos los datos necesarios.
+
+1. instalar flutter_riverpod
+2. crear un provider para la lista de juegos
+3. observar (watch) el provider desde la pantalla principal y desde la de agregar elementos a la lista
+4. a través del .notifier modificar la lista
