@@ -52,14 +52,16 @@ flutter_riverpod
 terminal: $ flutter pub add flutter_riverpod
 NO SE SI SE USA EL [ $ ] O NO
 
-en mian se agrega
-
-runApp(const ProviderScope(child: MainApp( )));
-
 se basa en providers, proveedores de estaodos.
 
 
 COMO CODERAR:
+
+-------------------
+
+en mian se agrega
+
+runApp(const ProviderScope(child: MainApp( )));
 
 -------------------
 
@@ -78,12 +80,12 @@ onPressed: ()
 },
 
 
---------------------
+-------------------
 
 fuera de screens -> providers.dart
 StateProvider <int> counterProvider = StateProvider <int>((ref) => 0); //el 0 se puede cambiar por el valor que quiera. counterProvider es el nombre del dato tipo StateProvider
 
----------------------
+-------------------
 
 TAREA: una pantalla extra para agregar peliculas a la lista de datos (en mi caso juegos). desde esta nueva pantalla se deben meter todos los datos necesarios.
 
