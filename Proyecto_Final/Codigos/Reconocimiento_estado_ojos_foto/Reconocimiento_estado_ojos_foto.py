@@ -1,70 +1,90 @@
-import cv2
-import dlib
-import numpy as np
-from scipy.spatial import distance
+import cv2                         # Manipular y editar imágenes y videos
+import dlib                        # Detección de rostros y predicción de puntos faciales
+import numpy as np                 # Manejo de matrices
+from scipy.spatial import distance # Calcular distancias espaciales usando funciones (dentro del EAR)
 
-# EAR
-def eye_aspect_ratio(eye):
-    A = distance.euclidean(eye[1], eye[5])
-    B = distance.euclidean(eye[2], eye[4])
-    C = distance.euclidean(eye[0], eye[3])
-    return (A + B) / (2.0 * C)
+# Se calcula el EAR (eye aspect ratio) para detectar si un ojo esta abierto o cerrado
+# Esta funcion va a tener 6 parametros, todos siendo puntos de cada ojo (se llama 1 vez por ojo)
+# Distance.euclidean calcula las distancias entre los puntos que se ingresen. [0, 1, 2, 3, 4, 5] son los puntos de cada ojo (6 puntos por cada ojo)
+# Los puntos van a ser un conjunto de coordenadas [x, y]
+def eye_aspect_ratio(ojo):
+    A = distance.euclidean(ojo[1], ojo[5])
+    B = distance.euclidean(ojo[2], ojo[4])
+    C = distance.euclidean(ojo[0], ojo[3])
+    return (A + B) / (2.0 * C) # Se devuelve el resultado del EAR
 
-# Índices de los ojos
-LEFT = list(range(42, 48))
-RIGHT = list(range(36, 42))
+# Se establecen los 6 puntos faciales para cada ojo que utiliza el modelo de 68 puntos de dlib
+# 00–16: contorno de la mandíbula
+# 17–21: ceja derecha
+# 22–26: ceja izquierda
+# 27–30: puente de la nariz
+# 30–35: parte inferior de la nariz
+# 36–41: ojo derecho                    | = DER
+# 42–47: ojo izquierdo                  | = IZQ
+# 48–67: boca
+
+DER = list(range(36, 42)) # [36, 37, 38, 39, 40, 41] son los puntos que luego se usan como [0, 1, 2, 3, 4, 5] en el EAR para el ojo derecho   (Luego de ser convertidos a [x, y])
+IZQ = list(range(42, 48)) # [42, 43, 44, 45, 46, 47] son los puntos que luego se usan como [0, 1, 2, 3, 4, 5] en el EAR para el ojo izquierdo (Luego de ser convertidos a [x, y])
 
 # Leer imagen
-image_bgr = cv2.imread("imagendecara4.jpg", cv2.IMREAD_COLOR)
-if image_bgr is None:
-    print("No se pudo cargar la imagen.")
-    input("Presiona ENTER para salir")
-    exit()
+imagen = cv2.imread("imagendecara3.jpg") # Cambiar el numero final para seleccionar otra imagen (ejemplo: "imagendecara1.jpg", "imagendecara2.jpg")
 
-# Convertir a RGB
-image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
-
-# Verificar tipo de imagen
-print(f"Tipo: {type(image_rgb)}, dtype: {image_rgb.dtype}, shape: {image_rgb.shape}")
-if image_rgb.dtype != np.uint8 or image_rgb.shape[2] != 3:
-    print("Imagen no válida para dlib.")
-    input("Presioná ENTER para salir")
-    exit()
+#Convertir de GBR a RGB (No es necesario)
+imagen_rgb = cv2.cvtColor(imagen, cv2.COLOR_BGR2RGB)
+# Convertir a grises
+grises = cv2.cvtColor(imagen_rgb, cv2.COLOR_RGB2GRAY)
 
 # Cargar detector y predictor
-detector = dlib.get_frontal_face_detector()
-predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
+detector = dlib.get_frontal_face_detector()                               # Detecta las caras en la imagen 
+predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat") # Detecta y marca los 68 puntos de referencia 
 
-# Detectar rostros
-try:
-    faces = detector(image_rgb)
-except RuntimeError as e:
-    print("Error detectando rostros:", e)
-    input("Presioná ENTER para salir")
-    exit()
+# Detectar caras
+caras = detector(grises) # Se detectan las caras (Se guardan en formato rectangular dlib.rectangle)
 
-for face in faces:
-    shape = predictor(image_rgb, face)
-    landmarks = np.array([[p.x, p.y] for p in shape.parts()])
+for numcara in caras: # Se hace para cada cara detectada
 
-    # Ojos
-    left_eye = landmarks[LEFT]
-    right_eye = landmarks[RIGHT]
+    shape = predictor(grises, numcara) # Se obtienen los 68 puntos (shape es un objeto que guarda los 68 puntos en formato dlib.point con atributos .x .y)
+    
+    puntos = [] # Se crea una lista vacia para guardar las coordenadas de cada punto
+    for punto in shape.parts(): # shape.parts devuelve una lista con los 68 puntos, asi que lo que este dentro del for: se va a hacer para cada punto
+        x = punto.x # Se guarda en x el atributo .x de cada punto
+        y = punto.y # Se guarda en y el atributo .y de cada punto
+        puntos.append([x, y]) # Se agregan [x, y] de cada punto a la lista puntos
 
-    ear_left = eye_aspect_ratio(left_eye)
-    ear_right = eye_aspect_ratio(right_eye)
+    landmarks = np.array(puntos) # Se convierte la lista puntos en una matriz de valores (68 filas. Una(1) columna para x. Una(1) columna para y)
+    # Se puede hacer print(puntos) o print(landmarks) para visualizar las coordenadas de cada punto
 
-    print(f"EAR izquierda: {ear_left:.2f}, EAR derecha: {ear_right:.2f}")
 
-    # Dibujar contorno de los ojos en la imagen BGR (para mostrar)
-    for (x, y) in left_eye:
-        cv2.circle(image_bgr, (x, y), 2, (0, 255, 0), -1)
-    for (x, y) in right_eye:
-        cv2.circle(image_bgr, (x, y), 2, (0, 255, 0), -1)
+    # Asignacion ojos
+    ojo_DER = landmarks[DER] # Se asignan a ojoDER los valores 36 a 41 de la matriz (lista ordenada) landmarks
+    ojo_IZQ = landmarks[IZQ] # Se asignan a ojoIZQ los valores 42 a 47 de la matriz (lista ordenada) landmarks
+    EAR_DER = eye_aspect_ratio(ojo_DER) # Se llama a la funcion eye_aspect_ratio con los valores de EAR_DER y con ojo siendo ojo_DER (para calcular EAR de ojo_DER)
+    EAR_IZQ = eye_aspect_ratio(ojo_IZQ) # Se llama a la funcion eye_aspect_ratio con los valores de EAR_IZQ y con ojo siendo ojo_IZQ (para calcular EAR de ojo_IZQ)
+
+    # Se imprimen los resultados del EAR de cada ojo
+    print(f"EAR izquierda: {EAR_IZQ:.2f}") # Solo se imprimen los primeros 2 decimales
+    print(f"EAR derecha: {EAR_DER:.2f}")   # Solo se imprimen los primeros 2 decimales
+
+    if (EAR_IZQ < 0.20 and EAR_DER < 0.20): # Si ambos EAR son menores a 0.20 (ojos cerrados), se dibujaran los puntos en rojo
+        valR = 255
+        valG = 0
+        valB = 0
+
+    if (EAR_IZQ > 0.20 and EAR_DER > 0.20): # Si ambos EAR son mayores a 0.20 (ojos abiertos), se dibujaran los puntos en verde
+        valR = 0
+        valG = 255
+        valB = 0
+
+    # Dibujar puntos de los ojos en la imagen
+    for (x, y) in ojo_IZQ: # Se repite para cada cojunto [x, y] dentro de ojo_IZQ
+        cv2.circle(imagen, (x, y), 2, (valB, valG, valR), -1) # Se dibuja un punto en las coordenadas (x, y) en formato BGR
+
+    for (x, y) in ojo_DER: # Se repite para cada cojunto [x, y] dentro de ojo_DER
+        cv2.circle(imagen, (x, y), 2, (valB, valG, valR), -1) # Se dibuja un punto en las coordenadas (x, y) en formato BGR
 
 # Mostrar la imagen
-cv2.imshow("Marcar ojos", image_bgr)
+cv2.imshow("Indicador ojos", imagen)
+
+print("Presione cualquier tecla para cerrar el programa")
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-
-input("Presione ENTER para cerrar el programa")
