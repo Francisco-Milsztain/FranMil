@@ -65,12 +65,12 @@ for numcara in caras: # Se hace para cada cara detectada
     print(f"EAR izquierda: {EAR_IZQ:.2f}") # Solo se imprimen los primeros 2 decimales
     print(f"EAR derecha: {EAR_DER:.2f}")   # Solo se imprimen los primeros 2 decimales
 
-    if (EAR_IZQ < 0.20 and EAR_DER < 0.20): # Si ambos EAR son menores a 0.20 (ojos cerrados), se dibujaran los puntos en rojo
+    if (EAR_IZQ < 0.21 and EAR_DER < 0.21): # Si ambos EAR son menores a 0.20 (ojos cerrados), se dibujaran los puntos en rojo
         valR = 255
         valG = 0
         valB = 0
 
-    if (EAR_IZQ > 0.20 and EAR_DER > 0.20): # Si ambos EAR son mayores a 0.20 (ojos abiertos), se dibujaran los puntos en verde
+    if (EAR_IZQ > 0.21 and EAR_DER > 0.21): # Si ambos EAR son mayores a 0.20 (ojos abiertos), se dibujaran los puntos en verde
         valR = 0
         valG = 255
         valB = 0
