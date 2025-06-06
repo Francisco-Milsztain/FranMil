@@ -65,16 +65,28 @@ for numcara in caras: # Se hace para cada cara detectada
     print(f"EAR izquierda: {EAR_IZQ:.2f}") # Solo se imprimen los primeros 2 decimales
     print(f"EAR derecha: {EAR_DER:.2f}")   # Solo se imprimen los primeros 2 decimales
 
-    if (EAR_IZQ < 0.21 and EAR_DER < 0.21): # Si ambos EAR son menores a 0.20 (ojos cerrados), se dibujaran los puntos en rojo
+    # Determinar si los ojos están abiertos o cerrados con un umbral
+    if (EAR_IZQ < 0.21 and EAR_DER < 0.21): # Si ambos EAR son menores a 0.21 (ojos cerrados)
+        IZQ_ABIERTO = False
+        DER_ABIERTO = False
+        
+    if (EAR_IZQ > 0.21 and EAR_DER > 0.21): # Si ambos EAR son mayores a 0.21 (ojos abiertos)
+        IZQ_ABIERTO = True
+        DER_ABIERTO = True
+
+    # Que pasa dependiendo del estado de los ojos
+    if (IZQ_ABIERTO == False and DER_ABIERTO == False): # Si los dos ojos están cerrados, se dibujan los puntos en rojo
         valR = 255
         valG = 0
-        valB = 0
-
-    if (EAR_IZQ > 0.21 and EAR_DER > 0.21): # Si ambos EAR son mayores a 0.20 (ojos abiertos), se dibujaran los puntos en verde
+        valB = 0    
+    
+    if (IZQ_ABIERTO == True and DER_ABIERTO == True): # Si los dos ojos están abiertos, se dibujan los puntos en verde
         valR = 0
         valG = 255
         valB = 0
-
+    
+    
+    
     # Dibujar puntos de los ojos en la imagen
     for (x, y) in ojo_IZQ: # Se repite para cada cojunto [x, y] dentro de ojo_IZQ
         cv2.circle(imagen, (x, y), 2, (valB, valG, valR), -1) # Se dibuja un punto en "imagen", en las coordenadas (x, y), con grosor 2, en formato BGR, con grosor de bordes -1
