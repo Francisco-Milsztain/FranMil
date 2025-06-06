@@ -68,8 +68,7 @@ for numcara in caras: # Se hace para cada cara detectada
     # Determinar si los ojos están abiertos o cerrados con un umbral
     if (EAR_IZQ < 0.21 and EAR_DER < 0.21): # Si ambos EAR son menores a 0.21 (ojos cerrados)
         IZQ_ABIERTO = False
-        DER_ABIERTO = False
-        
+        DER_ABIERTO = False      
     if (EAR_IZQ > 0.21 and EAR_DER > 0.21): # Si ambos EAR son mayores a 0.21 (ojos abiertos)
         IZQ_ABIERTO = True
         DER_ABIERTO = True
@@ -79,14 +78,12 @@ for numcara in caras: # Se hace para cada cara detectada
         valR = 255
         valG = 0
         valB = 0    
-    
     if (IZQ_ABIERTO == True and DER_ABIERTO == True): # Si los dos ojos están abiertos, se dibujan los puntos en verde
         valR = 0
         valG = 255
         valB = 0
     
-    
-    
+
     # Dibujar puntos de los ojos en la imagen
     for (x, y) in ojo_IZQ: # Se repite para cada cojunto [x, y] dentro de ojo_IZQ
         cv2.circle(imagen, (x, y), 2, (valB, valG, valR), -1) # Se dibuja un punto en "imagen", en las coordenadas (x, y), con grosor 2, en formato BGR, con grosor de bordes -1
