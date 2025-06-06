@@ -77,10 +77,10 @@ for numcara in caras: # Se hace para cada cara detectada
 
     # Dibujar puntos de los ojos en la imagen
     for (x, y) in ojo_IZQ: # Se repite para cada cojunto [x, y] dentro de ojo_IZQ
-        cv2.circle(imagen, (x, y), 2, (valB, valG, valR), -1) # Se dibuja un punto en las coordenadas (x, y) en formato BGR
+        cv2.circle(imagen, (x, y), 2, (valB, valG, valR), -1) # Se dibuja un punto en "imagen", en las coordenadas (x, y), con grosor 2, en formato BGR, con grosor de bordes -1
 
     for (x, y) in ojo_DER: # Se repite para cada cojunto [x, y] dentro de ojo_DER
-        cv2.circle(imagen, (x, y), 2, (valB, valG, valR), -1) # Se dibuja un punto en las coordenadas (x, y) en formato BGR
+        cv2.circle(imagen, (x, y), 2, (valB, valG, valR), -1) # Se dibuja un punto en "imagen", en las coordenadas (x, y), con grosor 2, en formato BGR, con grosor de bordes -1
 
 # Mostrar la imagen
 cv2.imshow("Indicador ojos", imagen)
