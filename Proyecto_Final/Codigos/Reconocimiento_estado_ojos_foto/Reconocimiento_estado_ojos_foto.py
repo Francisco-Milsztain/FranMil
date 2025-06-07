@@ -26,7 +26,7 @@ def eye_aspect_ratio(ojo):
 DER = list(range(36, 42)) # [36, 37, 38, 39, 40, 41] son los puntos que luego se usan como [0, 1, 2, 3, 4, 5] en el EAR para el ojo derecho   (Luego de ser convertidos a [x, y])
 IZQ = list(range(42, 48)) # [42, 43, 44, 45, 46, 47] son los puntos que luego se usan como [0, 1, 2, 3, 4, 5] en el EAR para el ojo izquierdo (Luego de ser convertidos a [x, y])
 
-# Leer imagen
+# Cargar imagen
 imagen = cv2.imread("imagendecara1.jpg") # Cambiar el numero final para seleccionar otra imagen (ejemplo: "imagendecara1.jpg", "imagendecara2.jpg")
 
 #Convertir de GBR a RGB (No es necesario)
