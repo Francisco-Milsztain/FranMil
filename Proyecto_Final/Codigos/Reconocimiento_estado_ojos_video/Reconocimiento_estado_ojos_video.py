@@ -73,8 +73,8 @@ while True:
     tiempo0 = time.time() # Variable que guarda el tiempo actual (se actualiza todo el tiempo)
     tiempo1 = 0           # Variable que va a guardar la diferencia de tiempo (se actualiza una vez cada 1s)
 
-    if tiempo0 > tiempo1:      # Si tiempo0 supera a tiempo1
-        tiempo1 = tiempo0 + 1  # A tiempo1 se le agrega una diferencia de 1 (para que la condicion vuelva a cumplirse)
+    if tiempo0 > tiempo1:     # Si tiempo0 supera a tiempo1
+        tiempo1 = tiempo0 + 1 # A tiempo1 se le agrega una diferencia de 1 (para que la condicion vuelva a cumplirse)
 
         caras = detector(grises)
 
