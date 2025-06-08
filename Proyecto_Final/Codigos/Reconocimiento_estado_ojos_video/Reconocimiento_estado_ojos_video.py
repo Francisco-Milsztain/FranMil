@@ -45,6 +45,8 @@ no_deteccion = 0
 # Cargar video
 video = cv2.VideoCapture("videodecara1.mp4") # Cambiar el numero final para seleccionar otro video (ejemplo: "videodecara1.jpg", "videodecara2.jpg")
 
+print("Presione la tecla 'x' para cerrar el reproductor")
+
 while True:
     # Se va a leer el video. 
     # ret es True o False dependiendo de si se pudo o no leer el video.
