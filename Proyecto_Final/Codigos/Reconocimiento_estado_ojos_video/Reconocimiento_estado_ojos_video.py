@@ -39,9 +39,11 @@ ojo_DER = []
 # Variable donde se guardan los colores de los puntos (BGR)
 val_color = (255, 255, 255)  
 
+# Variable de aviso de no deteccion
+no_deteccion = 0
 
 # Cargar video
-video = cv2.VideoCapture("videoentrada.mp4")
+video = cv2.VideoCapture("videodecara1.mp4") # Cambiar el numero final para seleccionar otro video (ejemplo: "videodecara1.jpg", "videodecara2.jpg")
 
 while True:
     # Se va a leer el video. 
@@ -111,9 +113,11 @@ while True:
 
 
         if len(caras) <= 0:
-            # Si no se detecta cara, vaciar listas (borrar puntos)
+            # Si no se detecta cara, borrar puntos y enviar mensaje de error
             ojo_IZQ = []
             ojo_DER = []
+            no_deteccion = no_deteccion + 1
+            print(f"ERROR: no_deteccion.{no_deteccion}, No se detectan caras")
 
         # Dibujar puntos de los ojos en la imagen
     for (x, y) in ojo_IZQ: # Se repite para cada cojunto [x, y] dentro de ojo_IZQ
