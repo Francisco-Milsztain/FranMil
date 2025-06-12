@@ -121,9 +121,10 @@ class addgames extends ConsumerWidget {
                   title: ingresotitle.text,
                   category: ingresocategory.text,
                   creator: ingresocreator.text,
-                  year: year,
+                  year: int.parse(ingresoyear.text),
                   posterUrl: ingresoposter.text,
                 );
+                context.go('/gameslist');
               },
               child: Text('Agregar', style: TextStyle(fontSize: 16)),
             ),
