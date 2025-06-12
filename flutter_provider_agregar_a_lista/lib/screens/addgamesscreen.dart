@@ -20,8 +20,6 @@ class addgames extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-  final juegos_actuales = ref.read(listaJuegosProvider);
-
     return Scaffold(
       body: Center(
         child:  Column(crossAxisAlignment: CrossAxisAlignment.center,
@@ -124,6 +122,10 @@ class addgames extends ConsumerWidget {
                   year: int.parse(ingresoyear.text),
                   posterUrl: ingresoposter.text,
                 );
+
+                final juegos_actuales = ref.read(listaJuegosProvider.notifier);
+                juegos_actuales.state = [...juegos_actuales.state, nuevoJuego];
+                
                 context.go('/gameslist');
               },
               child: Text('Agregar', style: TextStyle(fontSize: 16)),
