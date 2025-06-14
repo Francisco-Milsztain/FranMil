@@ -53,7 +53,10 @@ class gameslist extends ConsumerWidget {
                       width: 100,
                       height: 100,
                       fit: BoxFit.cover,
-                    ),
+                      errorBuilder: (context, error, stackTrace) {
+                        return Icon(Icons.image_not_supported, size: 70);
+                      },
+                    )
                   );
                 },
               ),
