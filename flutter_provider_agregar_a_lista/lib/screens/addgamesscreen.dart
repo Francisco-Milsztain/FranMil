@@ -20,6 +20,7 @@ class addgames extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
+
     return Scaffold(
       body: Center(
         child:  Column(crossAxisAlignment: CrossAxisAlignment.center,
@@ -110,11 +111,27 @@ class addgames extends ConsumerWidget {
                 height: 30,
               ),
 
+              Padding( 
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 5),
+
+                child: TextField(
+                  controller: ingresoposter,
+                  
+                  decoration: const InputDecoration( 
+                  labelText: 'Poster',
+                  border: OutlineInputBorder(),
+
+                  ),
+                ),
+              ),
+
+              SizedBox(
+                height: 30,
+              ),
+
               ElevatedButton(
               onPressed: () 
               {
-                
-
                 final nuevoJuego = Games(
                   title: ingresotitle.text,
                   category: ingresocategory.text,
