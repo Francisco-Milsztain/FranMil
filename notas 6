@@ -1,0 +1,15 @@
+como va a quedar la APP FINAL PARA EL FINAL DEL CUATRI:
+
+patnalla login: se hace el login.
+pantalla principal: lista de elementos, con un boton de agregar ("+") (no elevated button, el otro)
+al presionarlo, se cambia una pantalla donde se ingresan los datos del elemento a agregar, y boton para confirmar los datos y agregar el eelemnto.
+
+hay que agregar una funcion de modificar y eliminar elementos; aparte de agregar. Esto se hace en una misma pantalla, o se pueden hacer pantallas adicionales.
+
+la idea es que sin en vez de presionar el boton de "+", que se aprete un elemento de la lista para que se mande a la pantalla de agregar elemento, pero que en vez de servir para agregar,
+que sirva para editar o eliminar.
+
+en esta pantalla de editar elementos, debe haber un modo editar y un modo ver. para cambiar entre modos hacer un boton. modo ver == no se modifica nada. modo editar == se puede borrar y editar.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
