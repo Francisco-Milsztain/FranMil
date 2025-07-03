@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:flutter_provider_agregar_a_lista/providers.dart';
-
 class Deletegame extends ConsumerWidget {
   const Deletegame({super.key});
 
@@ -11,15 +10,18 @@ class Deletegame extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
 
     final juego = ref.watch(selectedgameProvider);
+    
     if (juego == null) 
     {
-      return Scaffold
+      context.go('/gameslist');
+
+     return Scaffold
       (
         body: Center
         (
           child: Text('Ningún juego seleccionado')
         ),
-      );
+      ); 
     }
 
     return Scaffold(
@@ -42,7 +44,7 @@ class Deletegame extends ConsumerWidget {
 
             Image.network
             (
-              juego.posterUrl,
+              juego!.posterUrl,
               height: 200,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
@@ -95,14 +97,32 @@ class Deletegame extends ConsumerWidget {
               {
                 context.go('/gameslist');
 
-                final juegos = ref.read(listaJuegosProvider.notifier).state;
+                final listaModificable = [...ref.read(listaJuegosProvider.notifier).state];
+                listaModificable.remove(juego);
 
-                ref.read(listaJuegosProvider.notifier).state = juegos.where((j) => j != juego).toList();
+                ref.read(listaJuegosProvider.notifier).state = listaModificable;
                 ref.read(selectedgameProvider.notifier).state = null;
               },
 
               child: Text('ELIMINAR', style: TextStyle(fontSize: 16)),
             ),
+
+            SizedBox(
+              height: 50
+            ),
+            
+            ElevatedButton(
+              onPressed: () 
+              {
+                context.go('/gameslist');
+
+                
+              },
+
+              child: Text('MODIFICAR', style: TextStyle(fontSize: 16)),
+            ),
+
+            
           ]
         )  
       ),
