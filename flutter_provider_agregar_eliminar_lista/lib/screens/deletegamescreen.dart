@@ -89,7 +89,7 @@ class Deletegame extends ConsumerWidget {
             ),
 
             SizedBox(
-              height: 30
+              height: 50
             ),
 
            ElevatedButton(
@@ -108,7 +108,7 @@ class Deletegame extends ConsumerWidget {
             ),
 
             SizedBox(
-              height: 50
+              height: 20
             ),
             
             ElevatedButton(
