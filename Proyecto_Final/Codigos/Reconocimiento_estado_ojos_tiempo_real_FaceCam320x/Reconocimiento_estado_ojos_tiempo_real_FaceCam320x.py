@@ -18,25 +18,28 @@ face_mesh = mp_face_mesh.FaceMesh(static_image_mode=False, max_num_faces=1, refi
 ojo_IZQ = []
 ojo_DER = []
 no_deteccion = 0
-no_camara = 0
 
 IZQ_ABIERTO = False
 DER_ABIERTO = False
 
+# CAMBIO: leer desde cámara en tiempo real (índice 0)
 video = cv2.VideoCapture(0)
 
 print()
 print()
-print("Programa Iniciado - Cámara en vivo")
+print("Programa Iniciado")
 print("Presione la tecla 'x' para cerrar el reproductor")
 print()
 print()
 
+# CAMBIO: eliminar lectura de fps (no aplica a cámara en vivo)
+# fps = video.get(cv2.CAP_PROP_FPS)
+# frame_delay = int(1000 / fps)
+
 while True:
     ret, frame = video.read()
     if not ret:
-        no_camara = no_camara + 1
-        print(f"ERROR: no_camara.{no_camara}, No se pudo leer la cámara")
+        print("ERROR: no se pudo leer de la cámara")
         break
 
     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -62,12 +65,19 @@ while True:
             DER_ABIERTO = EAR_DER > 0.21
             IZQ_ABIERTO = EAR_IZQ > 0.21
 
-            color_DER = (0, 255, 0) if DER_ABIERTO else (0, 0, 255)
-            color_IZQ = (0, 255, 0) if IZQ_ABIERTO else (0, 0, 255)
+            if DER_ABIERTO:
+                color_DER = (0, 255, 0)  # Verde
+            else:
+                color_DER = (0, 0, 255)  # Rojo
+
+            if IZQ_ABIERTO:
+                color_IZQ = (0, 255, 0)  # Verde
+            else:
+                color_IZQ = (0, 0, 255)  # Rojo
     else:
         ojo_IZQ = []
         ojo_DER = []
-        no_deteccion = no_deteccion + 1
+        no_deteccion += 1
         print(f"ERROR: no_deteccion.{no_deteccion}, No se detectan caras")
 
     for (x, y) in ojo_IZQ:
@@ -77,6 +87,7 @@ while True:
 
     cv2.imshow("Deteccion de Ojos", frame)
 
+    # CAMBIO: usar tiempo fijo para cámara en vivo
     if cv2.waitKey(1) & 0xFF == ord('x'):
         break
 
