@@ -25,5 +25,11 @@ las sql tienen relaciones fuertes o de dependencia entre actores. en las no sql 
 en una base estructurada (sql) todos los usuarios(elementos) tienen la misma forma o atributos. en una tabla, todos tienen la misma estructura.
 en una no estructurada (no sql), cada usuario puede tener atributos distintos, tiene forma de árbol con ramificaciones en vez de ser una tabla.
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------
+VENTAJAS DE LA NO SQL: flexible, admite muchos tipos de datos, 
+Ventajas de la sql: la query es la instruccion de busqueda dentro de una base de datos, y es mucho más facil usarlo en una sql que en una no sql.
 
+firebase es no sql.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+firestore database, authentication, storage
