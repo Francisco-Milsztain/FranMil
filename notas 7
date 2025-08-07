@@ -32,4 +32,6 @@ firebase es no sql.
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-firestore database, authentication, storage
+firestore database (1), authentication (2), storage (3)
+
+(1) una coleccion tiene documentos, cada documento representa una "entidad", esta entidad despues tiene sus datos o atributos propios.
