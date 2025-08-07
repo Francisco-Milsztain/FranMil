@@ -1,0 +1,16 @@
+frontend: una app que tiene interfaz de usuario. backend: una app que no tiene interfaz de usuario.
+hay bases de datos (db) locales, guardadas adentro del dispositivo, ej: memoria del teléfono.
+hay bases de datos que están en la nube, guardadas fuera del dispositivo.
+
+la ventaja de la db local es que no necesita internet.
+la ventaja de la base de datos de la nube, es que yo puedo consumir esta desde varios dispositivos, permitiendo que la información se comparta.
+la nube es un servidor (una computadora).
+
+para conectar un dispositivo (frontend) a la nube, se requiere un backend como intermediario (el backend ES la base de datos).
+el backend maneja la db, la autenticacion, los archivos/datos, y a veces la business logic.
+
+la business logic maneja la logica de negocio, permite que los usuarios hagan lo que el negocio quiere (esta logica puede estar en el frontend tamibien).
+
+la api es la interfaz de programación entre las dos partes (conecta el frontend con el backend //// tambien puede concetar backend con backend).
+EL BACKEND SIEMPRE ESTÁ, NO SIEMPRE LO HACES VOS.
+
