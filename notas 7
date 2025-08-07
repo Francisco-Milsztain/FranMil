@@ -14,3 +14,16 @@ la business logic maneja la logica de negocio, permite que los usuarios hagan lo
 la api es la interfaz de programación entre las dos partes (conecta el frontend con el backend //// tambien puede concetar backend con backend).
 EL BACKEND SIEMPRE ESTÁ, NO SIEMPRE LO HACES VOS.
 
+DATABASES:
+
+se clasifiacban en: relacionales y no relacionales (esta clasificacion es una mierda dice ale)
+las relacionales permiten que se relacionen los objetos a traves de atributos.
+la clasificacion está mal, porque las relaciones entre actores siempre existen, sin importar si hay base de datos o no.
+
+LAS BASES DE DATOS REALMENTE SE DIVIDEN EN *SQL (structure query language)* Y EN *NO SQL*
+las sql tienen relaciones fuertes o de dependencia entre actores. en las no sql no pasa esto.
+en una base estructurada (sql) todos los usuarios(elementos) tienen la misma forma o atributos. en una tabla, todos tienen la misma estructura.
+en una no estructurada (no sql), cada usuario puede tener atributos distintos, tiene forma de árbol con ramificaciones en vez de ser una tabla.
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
