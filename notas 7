@@ -35,3 +35,31 @@ firebase es no sql.
 firestore database (1), authentication (2), storage (3)
 
 (1) una coleccion tiene documentos, cada documento representa una "entidad", esta entidad despues tiene sus datos o atributos propios.
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+el notifier del provider ya no es el estado de una variable, sino que es una funcion para cambiar el estado.
+movie_app_firebase en el github de ale.
+
+class Movie tiene los métodos de toFirestore y fromFirestore
+en a pantalla se usa consumerstatefulwidget (xq se usa riverpod)
+
+ahora el notifier llama (en el init state) a un metodo con ref.read(movieProvider.notifier).[METODO](); (metodo = funcion)
+en el provider (movieProvider) cambia mucho. antes se usaba stateprovider, ahora es statenotifierprovider, porque ahora el notifier lo defino yo en vez de ser el normal
+
+el movieNotifier es una class, donde se pueden guardar las funciones que van a ser usadas para cambiar el estado. el notifier puede ser de tipo list, por lo que esta list se modifica con los métodos
+
+ANTES DE LA FUNCIONES SE HACE
+
+final FirebaseFirestore db;
+
+MoviesNotifier(this.db) : super{[]};
+
+FUNCION 2 (la 1 despues la explica):
+funcion getAllMovies, modifica la lista (el estado), no devuelve nada. future = promesa. 
+
+Future<void> getAllMovies() async 
+{
+  //se iguala docsa a db.collection('movies') bla bla 
+  //esta funcion basicamente recibe datos desde firebase y los convierte a objetos
+}
