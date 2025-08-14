@@ -63,3 +63,5 @@ Future<void> getAllMovies() async
   //se iguala docsa a db.collection('movies') bla bla 
   //esta funcion basicamente recibe datos desde firebase y los convierte a objetos
 }
+
+https://github.com/adbrepo/curso_flutter
