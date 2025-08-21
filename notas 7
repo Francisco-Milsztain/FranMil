@@ -45,7 +45,7 @@ class Movie tiene los métodos de toFirestore y fromFirestore
 en a pantalla se usa consumerstatefulwidget (xq se usa riverpod)
 
 ahora el notifier llama (en el init state) a un metodo con ref.read(movieProvider.notifier).[METODO](); (metodo = funcion)
-en el provider (movieProvider) cambia mucho. antes se usaba stateprovider, ahora es statenotifierprovider, porque ahora el notifier lo defino yo en vez de ser el normal
+en el provider (movieProvider) cambia mucho. antes se usaba stateprovider, ahora es statenotifierprovider (extends StateNotifier), porque ahora el notifier lo defino yo en vez de ser el normal
 
 el movieNotifier es una class, donde se pueden guardar las funciones que van a ser usadas para cambiar el estado. el notifier puede ser de tipo list, por lo que esta list se modifica con los métodos
 
@@ -65,3 +65,28 @@ Future<void> getAllMovies() async
 }
 
 https://github.com/adbrepo/curso_flutter
+
+
+|-----------|
+| NOTAS 7.5 |
+|-----------|
+
+ahora hay que conectar la app con firebase (a modo general).
+configurar la app para conectarse a un proyecto de firebase.
+despues de esto se crea la base de datos y se puede empezar a usar.
+
+COMO CONECTAR APP AL PROYECTO:
+agregar app (desde firebase) --> flutter --> seguir los pasos --> checkear si se agregó "firebase_options.dart"
+
+en main hay que agregar el codigo que dice inicializa firebase (va antes de runApp)
+
+WidgetsFlutterBinding.ensureInitializaed();
+await bla bla [se copia y pega]
+
+hay que instalar la libreria firebase_core y  cloud_firestore (a veces se agrega solo)
+
+en el provider se hacen 2 funciones (una recibe otra envia)
+
+.doc() es una funcion que crea un documento nuevo
+AMBAS FUNCIONENS NECESITAN TRY CATCH. 
+El codigo de ejemplo esta en adbrepo "movie_app_firebase"
