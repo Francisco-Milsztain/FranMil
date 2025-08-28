@@ -24,7 +24,7 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen> {
   @override
   Widget build(BuildContext context) {
     final welcomed_user = ref.watch(selecteduserProvider);
-    final juegos = ref.watch(listaJuegosProvider); // Lista de juegos actualizada
+    final juegos = ref.watch(listaJuegosProvider);
 
     return Scaffold(
       body: Center(
@@ -94,4 +94,5 @@ class _GamesListScreenState extends ConsumerState<GamesListScreen> {
       ),
     );
   }
+
 }
