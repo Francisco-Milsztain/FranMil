@@ -27,12 +27,15 @@ ojo_IZQ = []
 ojo_DER = []
 no_deteccion = 0
 
+EAR_RATIO = 0.26 # Si el valor es alto, ojos siempre CERRADOS | Si el valor es bajo, ojos siempre ABIERTOS
+
 IZQ_ABIERTO = False
 DER_ABIERTO = False
 OjosCerrados = False
 
 TiempoActual = 0
 SumaTiempo = 0
+GuardadoTiempoCerrados = 0
 
 PIN_ALARMA = 10 # CAMBIAR ESTE POR EL PIN DEL RASPBERRY CONECTADO AL DEL ESP32
 GPIO.setmode(GPIO.BCM)
@@ -72,11 +75,11 @@ while True:
             EAR_IZQ = eye_aspect_ratio(ojo_IZQ)
             EAR_DER = eye_aspect_ratio(ojo_DER)
 
-            if EAR_IZQ > 0.21:
+            if EAR_IZQ > EAR_RATIO:
                 IZQ_ABIERTO = True
             else:
                 IZQ_ABIERTO = False
-            if EAR_DER > 0.21:
+            if EAR_DER > EAR_RATIO:
                 DER_ABIERTO = True
             else:
                 DER_ABIERTO = False
@@ -89,10 +92,14 @@ while True:
                 color_DER = (0, 255, 0)  # Verde
             else:
                 color_DER = (0, 0, 255)  # Rojo
+
+            #print(f"EAR_IZQ: {EAR_IZQ} | EAR_DER: {EAR_DER}") # Verificar valores de EAR
     
     else:
         ojo_IZQ = []
         ojo_DER = []
+        IZQ_ABIERTO = True
+        DER_ABIERTO = True
         no_deteccion = no_deteccion + 1
         print(f"ERROR: no_deteccion.{no_deteccion}, No se detectan caras")
 
@@ -105,11 +112,13 @@ while True:
         SumaTiempo = TiempoActual + 4
 
     if IZQ_ABIERTO == False and DER_ABIERTO == False:
+        GuardadoTiempoCerrados = time.time()
         if PersonaDormida(TiempoActual, SumaTiempo):
             print("ALERTA: PERSONA DORMIDA")
             GPIO.output(PIN_ALARMA, GPIO.HIGH) # Enviar señal al ESP32
 
     if IZQ_ABIERTO == True or DER_ABIERTO == True:
+        if TiempoActual - GuardadoTiempoCerrados >= 0.3: # Logica de antirebote
         OjosCerrados = False
         SumaTiempo = TiempoActual
         print("| Cuenta regresiva cancelada |")
