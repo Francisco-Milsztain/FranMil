@@ -1,0 +1,220 @@
+#include <Arduino.h>
+#include <LiquidCrystal_I2C.h>
+#include <Wire.h>
+
+//ESTADOS
+#define ESTADO_INICIO 1
+#define ESTADO_LECTURA_MQ3 2
+#define ESTADO_ESPERA1 3
+#define ESTADO_ESPERA2 4
+#define ESTADO_BLOQUEADA 5
+#define ESTADO_DESBLOQUEADA 6
+int ESTADO = ESTADO_INICIO;
+
+//Pantalla
+LiquidCrystal_I2C lcd_1(0x27, 16, 2);
+
+//MQ2
+#define PIN_MQ2 33
+int lec_MQ2;
+float map_MQ2;
+
+#define ALCOHOLIZADO 80
+#define NO_ALCOHOLIZADO 70
+
+//Buzzer
+#define PIN_BUZZER 32
+
+//Balizas
+#define PIN_BALIZAS 25
+
+//Llave
+#define PIN_LLAVE 26
+int bloqLLAVE = 0;
+
+//Lectura RaspberryPy
+#define PIN_RASPY 34
+int lec_raspy;
+
+//LED
+#define PIN_LED A3
+int lecpin;
+
+//Botones
+int BOTON = A1;
+int lecbot;
+int BOTON2 = A2;
+int lecbot2;
+
+#define PRESIONADO 0
+#define SOLTADO 1
+
+//Variables de tiempo
+unsigned long timer;
+unsigned long timer_tres_horas_media_hora;
+unsigned long cuentaregresivamillis;
+unsigned long cuentaregresivasegundos;
+unsigned long cuentaregresivaminutos;
+unsigned long cuentaregresivahoras;
+
+void setup()
+{
+  Serial.begin(115200);
+
+  //Buzzer
+  pinMode(PIN_BUZZER, OUTPUT);
+
+  //Balizas
+  pinMode(PIN_BALIZAS, OUTPUT);
+
+  //Llaves
+  pinMode(PIN_LLAVE, OUTPUT); //(Tiene lógica inversa)
+
+  //Boton
+  pinMode(BOTON, INPUT);
+  pinMode(BOTON2, INPUT);
+
+  //Raspin
+  pinMode(PIN_RASPY, INPUT);
+
+  //Pantalla
+  lcd_1.init();
+  lcd_1.backlight();
+
+  lcd_1.setCursor(0, 0);
+  lcd_1.print("Pulse y sople en");
+  lcd_1.setCursor(0, 1);
+  lcd_1.print("el alcoholimetro");
+}
+
+void loop()
+{
+  timer = millis();
+  cuentaregresivamillis = timer_tres_horas_media_hora - timer;
+  cuentaregresivasegundos = cuentaregresivamillis / 1000;
+  cuentaregresivaminutos = cuentaregresivasegundos / 60;
+  cuentaregresivahoras = cuentaregresivaminutos / 60;
+
+  lecbot = digitalRead(BOTON);
+  lecbot2 = digitalRead(BOTON2);
+
+  //Sensor de gas MQ2
+  lec_MQ2 = analogRead(PIN_MQ2);
+  map_MQ2 = map(lec_MQ2, 0, 1023, 0, 100);
+
+  switch (ESTADO)
+  {
+    case ESTADO_INICIO:
+
+    //Pantalla
+    lcd_1.init();
+    lcd_1.backlight();
+
+    lcd_1.setCursor(0, 0);
+    lcd_1.print("Pulse y sople en");
+    lcd_1.setCursor(0, 1);
+    lcd_1.print("el alcoholimetro");
+
+    if (lecbot == PRESIONADO)
+    {
+      ESTADO = ESTADO_LECTURA_MQ3;
+    }
+
+    break;
+
+    case ESTADO_LECTURA_MQ3:
+
+    if (lec_MQ2 > ALCOHOLIZADO && lec_MQ2 < NO_ALCOHOLIZADO)
+    {
+      ESTADO = ESTADO_ESPERA1;
+    }
+    
+    if (lec_MQ2 > NO_ALCOHOLIZADO)
+    {
+      ESTADO = ESTADO_ESPERA2;
+    }
+
+    if (lecbot == SOLTADO)
+    {
+      ESTADO = ESTADO_INICIO;
+    }
+
+    break;
+    
+    case ESTADO_ESPERA1:
+
+    if (lecbot == SOLTADO)
+    {
+      ESTADO = ESTADO_BLOQUEADA;
+      timer_tres_horas_media_hora = timer + 1800000; //Se suma media hora a la cuenta
+    }
+
+    break;
+    
+    case ESTADO_ESPERA2:
+
+    if (lecbot == SOLTADO)
+    {
+      ESTADO = ESTADO_DESBLOQUEADA;
+      timer_tres_horas_media_hora = timer + 10800000; //Se suman tres horas a la cuenta
+    }
+
+    break;
+
+    case ESTADO_BLOQUEADA:
+
+    lcd_1.clear();
+    lcd_1.setCursor(0, 0);
+    lcd_1.print("Auto bloqueado");
+    lcd_1.setCursor(0, 1);
+    lcd_1.print(cuentaregresivahoras);
+    lcd_1.setCursor(3, 1);
+    lcd_1.print(cuentaregresivaminutos);
+    lcd_1.setCursor(7, 1);
+    lcd_1.print(cuentaregresivasegundos);
+
+    digitalWrite(PIN_LLAVE, HIGH); //Se bloquea la llave del auto
+
+    if (timer > timer_tres_horas_media_hora) //Si termina la cuenta de tiempo
+    {
+      ESTADO = ESTADO_INICIO;
+    }
+
+    break;
+    
+    case ESTADO_DESBLOQUEADA:
+
+    lcd_1.setCursor(0, 0);
+    lcd_1.print("Puede manejar.");
+
+    lcd_1.setCursor(0, 1);
+    lcd_1.print(cuentaregresivahoras);
+    lcd_1.setCursor(3, 1);
+    lcd_1.print(cuentaregresivaminutos);
+    lcd_1.setCursor(7, 1);
+    lcd_1.print(cuentaregresivasegundos);
+
+    digitalWrite(PIN_LLAVE, LOW); //Se libera la llave del auto
+
+    if (timer > timer_tres_horas_media_hora) //Si termina la cuenta de tiempo
+    {
+      ESTADO = ESTADO_INICIO;
+    }
+
+    break;
+  }
+  
+  //Se lee el pin del RaspberryPy (buzzer y balizas)
+  lec_raspy = digitalRead(PIN_RASPY);
+
+  if (lec_raspy == 1) //Si se detecta que el RaspberryPy manda una señal al ESP32
+  {
+    digitalWrite(PIN_BUZZER, HIGH); //Se prende el buzzer
+    digitalWrite(PIN_BALIZAS, HIGH); //Se prenden las balizas
+  }
+  if (lec_raspy == 0) //Sino
+  {
+    digitalWrite(PIN_BUZZER, LOW); //Se apaga el buzzer
+    digitalWrite(PIN_BALIZAS, LOW); //Se apagan las balizas
+  }
+}
