@@ -124,12 +124,12 @@ void loop()
 
     case ESTADO_LECTURA_MQ3:
 
-    if (lec_MQ2 > ALCOHOLIZADO && lec_MQ2 < NO_ALCOHOLIZADO)
+    if (lec_MQ2 > ALCOHOLIZADO) //Persona alcoholizada
     {
       ESTADO = ESTADO_ESPERA1;
     }
     
-    if (lec_MQ2 > NO_ALCOHOLIZADO)
+    if (lec_MQ2 > NO_ALCOHOLIZADO && lec_MQ2 < ALCOHOLIZADO) //Persona no alcoholizada|
     {
       ESTADO = ESTADO_ESPERA2;
     }
