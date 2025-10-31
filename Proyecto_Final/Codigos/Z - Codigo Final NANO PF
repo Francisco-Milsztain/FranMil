@@ -209,12 +209,12 @@ void loop()
 
   if (lec_raspy == 1) //Si se detecta que el RaspberryPy manda una señal al ESP32
   {
-    digitalWrite(PIN_BUZZER, HIGH); //Se prende el buzzer
+    tone(PIN_BUZZER, 600); //Se prende el buzzer
     digitalWrite(PIN_BALIZAS, HIGH); //Se prenden las balizas
   }
   if (lec_raspy == 0) //Sino
   {
-    digitalWrite(PIN_BUZZER, LOW); //Se apaga el buzzer
+    noTone(PIN_BUZZER); //Se apaga el buzzer
     digitalWrite(PIN_BALIZAS, LOW); //Se apagan las balizas
   }
 }
