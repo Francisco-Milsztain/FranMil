@@ -15,12 +15,12 @@ int ESTADO = ESTADO_INICIO;
 LiquidCrystal_I2C lcd_1(0x27, 16, 2);
 
 //MQ2
-#define PIN_MQ2 33
+#define PIN_MQ2 A0
 int lec_MQ2;
 float map_MQ2;
 
-#define ALCOHOLIZADO 80
-#define NO_ALCOHOLIZADO 70
+#define ALCOHOLIZADO 180
+#define NO_ALCOHOLIZADO 120
 
 //Buzzer
 #define PIN_BUZZER 32
@@ -41,9 +41,9 @@ int lec_raspy;
 int lecpin;
 
 //Botones
-int BOTON = A1;
+int BOTON = A2;
 int lecbot;
-int BOTON2 = A2;
+int BOTON2 = A1; //NO FUNCIONA NO SE USA
 int lecbot2;
 
 #define PRESIONADO 0
@@ -59,7 +59,7 @@ unsigned long cuentaregresivahoras;
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
 
   //Buzzer
   pinMode(PIN_BUZZER, OUTPUT);
@@ -69,6 +69,9 @@ void setup()
 
   //Llaves
   pinMode(PIN_LLAVE, OUTPUT); //(Tiene lógica inversa)
+
+  //MQ2
+  pinMode(PIN_MQ2, INPUT);
 
   //Boton
   pinMode(BOTON, INPUT);
