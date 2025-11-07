@@ -19,18 +19,17 @@ LiquidCrystal_I2C lcd_1(0x27, 16, 2);
 int lec_MQ2;
 float map_MQ2;
 
-#define ALCOHOLIZADO 180
-#define NO_ALCOHOLIZADO 120
+#define ALCOHOLIZADO 2    //cambiar por valor real
+#define NO_ALCOHOLIZADO 1 //cambiar por valor real
 
 //Buzzer
 #define PIN_BUZZER 11
 
 //Balizas
-#define PIN_BALIZAS 6
+int PIN_BALIZAS = 6;
 
 //Llave
-#define PIN_LLAVE 7
-int bloqLLAVE = 0;
+int PIN_LLAVE = 7;
 
 //Lectura RaspberryPy
 #define PIN_RASPY 12  
@@ -43,8 +42,6 @@ int lecpin;
 //Botones
 int BOTON = A2;
 int lecbot;
-int BOTON2 = A1; //NO FUNCIONA NO SE USA
-int lecbot2;
 
 #define PRESIONADO 0
 #define SOLTADO 1
@@ -61,25 +58,6 @@ void setup()
 {
   Serial.begin(9600);
 
-  //Buzzer
-  pinMode(PIN_BUZZER, OUTPUT);
-
-  //Balizas
-  pinMode(PIN_BALIZAS, OUTPUT);
-
-  //Llaves
-  pinMode(PIN_LLAVE, OUTPUT); //(Tiene lógica inversa)
-
-  //MQ2
-  pinMode(PIN_MQ2, INPUT);
-
-  //Boton
-  pinMode(BOTON, INPUT_PULLUP);
-  pinMode(BOTON2, INPUT);
-
-  //Raspin
-  pinMode(PIN_RASPY, INPUT);
-
   //Pantalla
   lcd_1.init();
   lcd_1.backlight();
@@ -88,10 +66,30 @@ void setup()
   lcd_1.print("Pulse y sople en");
   lcd_1.setCursor(0, 1);
   lcd_1.print("el alcoholimetro");
+
+  //Buzzer
+  pinMode(PIN_BUZZER, OUTPUT);
+
+  //Balizas
+  pinMode(PIN_BALIZAS, OUTPUT);
+  digitalWrite(PIN_BALIZAS, HIGH);  
+
+  //Llaves
+  pinMode(PIN_LLAVE, OUTPUT); //(Tiene lógica inversa)
+  digitalWrite(PIN_LLAVE, HIGH);
+
+  //MQ2
+  pinMode(PIN_MQ2, INPUT);
+
+  //Boton
+  pinMode(BOTON, INPUT_PULLUP);
+
+  //Raspin
+  pinMode(PIN_RASPY, INPUT);
 }
 
 void loop()
-{
+{  
   timer = millis();
   cuentaregresivamillis = timer_tres_horas_media_hora - timer;
   cuentaregresivasegundos = cuentaregresivamillis / 1000;
@@ -99,18 +97,29 @@ void loop()
   cuentaregresivahoras = cuentaregresivaminutos / 60;
 
   lecbot = digitalRead(BOTON);
-  lecbot2 = digitalRead(BOTON2);
 
   //Sensor de gas MQ2
   lec_MQ2 = analogRead(PIN_MQ2);
   map_MQ2 = map(lec_MQ2, 0, 1023, 0, 100);
 
+  //PRINTS
+  Serial.print("MQ3: ");
+  Serial.println(lec_MQ2);
+
+  Serial.print("RASPBERRY: ");
+  Serial.println(lec_raspy);
+  
+  Serial.print("Estado:");
+  Serial.println(ESTADO);
+
+  Serial.print("boton: ");
+  Serial.println(lecbot);
+  
   switch (ESTADO)
   {
     case ESTADO_INICIO:
 
     //Pantalla
-    lcd_1.init();
     lcd_1.backlight();
 
     lcd_1.setCursor(0, 0);
@@ -168,6 +177,7 @@ void loop()
 
     lcd_1.clear();
     lcd_1.setCursor(0, 0);
+    
     lcd_1.print("Auto bloqueado");
     lcd_1.setCursor(0, 1);
     lcd_1.print(cuentaregresivahoras);
@@ -186,10 +196,11 @@ void loop()
     break;
     
     case ESTADO_DESBLOQUEADA:
-
+    
+    lcd_1.clear();
     lcd_1.setCursor(0, 0);
+    
     lcd_1.print("Puede manejar.");
-
     lcd_1.setCursor(0, 1);
     lcd_1.print(cuentaregresivahoras);
     lcd_1.setCursor(3, 1);
@@ -206,7 +217,7 @@ void loop()
 
     break;
   }
-  
+  /*
   //Se lee el pin del RaspberryPy (buzzer y balizas)
   lec_raspy = digitalRead(PIN_RASPY);
 
@@ -220,4 +231,5 @@ void loop()
     noTone(PIN_BUZZER); //Se apaga el buzzer
     digitalWrite(PIN_BALIZAS, LOW); //Se apagan las balizas
   }
+  */
 }
