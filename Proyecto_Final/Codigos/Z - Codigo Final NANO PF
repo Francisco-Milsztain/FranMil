@@ -23,17 +23,17 @@ float map_MQ2;
 #define NO_ALCOHOLIZADO 120
 
 //Buzzer
-#define PIN_BUZZER 32
+#define PIN_BUZZER 11
 
 //Balizas
-#define PIN_BALIZAS 25
+#define PIN_BALIZAS 6
 
 //Llave
-#define PIN_LLAVE 26
+#define PIN_LLAVE 7
 int bloqLLAVE = 0;
 
 //Lectura RaspberryPy
-#define PIN_RASPY 34
+#define PIN_RASPY 12  
 int lec_raspy;
 
 //LED
@@ -74,7 +74,7 @@ void setup()
   pinMode(PIN_MQ2, INPUT);
 
   //Boton
-  pinMode(BOTON, INPUT);
+  pinMode(BOTON, INPUT_PULLUP);
   pinMode(BOTON2, INPUT);
 
   //Raspin
