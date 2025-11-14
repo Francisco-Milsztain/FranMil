@@ -19,8 +19,8 @@ LiquidCrystal_I2C lcd_1(0x27, 16, 2);
 int lec_MQ2;
 float map_MQ2;
 
-#define ALCOHOLIZADO 2    //cambiar por valor real
-#define NO_ALCOHOLIZADO 1 //cambiar por valor real
+#define ALCOHOLIZADO 30002    //cambiar por valor real
+#define NO_ALCOHOLIZADO 10 //cambiar por valor real
 
 //Buzzer
 #define PIN_BUZZER 11
@@ -217,19 +217,18 @@ void loop()
 
     break;
   }
-  /*
+
   //Se lee el pin del RaspberryPy (buzzer y balizas)
   lec_raspy = digitalRead(PIN_RASPY);
 
   if (lec_raspy == 1) //Si se detecta que el RaspberryPy manda una señal al ESP32
   {
     tone(PIN_BUZZER, 600); //Se prende el buzzer
-    digitalWrite(PIN_BALIZAS, HIGH); //Se prenden las balizas
+    digitalWrite(PIN_BALIZAS, LOW); //Se prenden las balizas
   }
   if (lec_raspy == 0) //Sino
   {
     noTone(PIN_BUZZER); //Se apaga el buzzer
-    digitalWrite(PIN_BALIZAS, LOW); //Se apagan las balizas
+    digitalWrite(PIN_BALIZAS, HIGH); //Se apagan las balizas
   }
-  */
 }
