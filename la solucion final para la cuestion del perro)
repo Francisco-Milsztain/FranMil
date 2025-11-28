@@ -1,0 +1,1194 @@
+//Milsztain, Macia, Colombres, Reboratti
+
+#include <Wire.h>
+#include <LiquidCrystal_I2C.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_AHTX0.h>
+#include <Preferences.h>
+#include <ESP32Time.h>
+#include <WiFi.h>
+#include "time.h"
+#include <WiFiClientSecure.h>
+#include <UniversalTelegramBot.h>
+#include <ArduinoJson.h>
+#include "AsyncMqttClient.h"
+
+
+//***2 CORE LOOPS***
+TaskHandle_t Task1;
+TaskHandle_t Task2;
+//***FIN 2 CORE LOOPS***
+
+//***ESTADOS***
+
+#define PANTALLA1 1
+#define PANTALLA2 2
+#define FASE1 3
+#define FASE2 4
+#define CAMBIO_UMBRAL 5
+#define SUMAR_UMBRAL 6
+#define RESTAR_UMBRAL 7
+#define SUMAR_GMT 8
+#define RESTAR_GMT 9
+#define UMBRAL_TEMP_SUPERADO 10 //NO SE USA
+#define UMBRAL_HUM_SUPERADO 11  //NO SE USA
+#define UMBRAL_LUZ_SUPERADO 12  //NO SE USA
+#define UMBRAL_GAS_SUPERADO 13  //NO SE USA
+#define CAMBIO_LECTURA 14
+#define ESTADO0 15
+int ESTADO = ESTADO0;
+
+//***FIN ESTADOS***
+
+
+//***BOTONES***
+
+  #define BOT1 25
+  #define BOT2 33
+  #define BOT3 32
+  #define BOT4 27
+  #define BOT5 19
+
+  //INVERTIR LOS NUMEROS SI LOS BOTONES ESTAN EN PULLUP
+  #define PRESIONADO 0
+  #define SOLTADO 1
+
+  int lecb1;
+  int lecb2;
+  int lecb3;
+  int lecb4;
+  int lecb5;
+
+  int bloqb1;
+  int bloqb2;
+  int bloqb3;
+  int bloqb4;
+  int bloqb5;
+
+//***FIN BOTONES***
+
+
+//***LEDS***
+int led1 = 16;
+int led2 = 17;
+int led3 = 18;
+
+int checktemp = 0;
+int checkhum = 0; 
+int checkluz = 0;
+int checkgas = 0;
+int checkgas2 = 0;
+//***FIN LEDS***
+
+//***DISPLAY***
+
+LiquidCrystal_I2C lcd_1(0x27, 16, 2);
+
+//***FIN DISPLAY***
+
+
+//***SENSORES***
+
+  int lectura_seleccionada = 1;
+  int umbral_seleccionado = 1;
+
+  //Sensor Gas monóxido
+  int pingas = 26;
+  float lecgas;
+  float umbgas;
+
+  //Sensor Gas2 metano
+  int pingas2 = 13;
+  float lecgas2;
+  float umbgas2;
+
+  //Sensor Luz
+  int pinluz = 34; //CAMBIAR ESTE PIN POR UNO ANALÓGICO
+  float lecluz;
+  float umbluz;
+
+  //Sensor Temp y humedad
+  Adafruit_AHTX0 aht;
+
+  float lectemp;
+  float umbtemp;
+
+  float lechum;
+  float umbhum;
+
+  //MAPEOS
+  float maptemp; //NO HAY MAPEO DE TEMP (Se mantiene en C°)
+  float mapgas; 
+  float mapgas2;
+  float mapluz; 
+  float maphum; 
+
+//***FIN SENSORES***
+
+
+//***EEPROM***
+
+int checkeotemp = 0;
+int checkeoluz = 0;
+int checkeogas = 0;
+int checkeogas2 = 0;
+int checkeohum = 0;
+
+Preferences umbral_eeprom;
+
+//***FIN EEPROM***
+
+
+//***WIFI***
+
+const char* ssid = "Fibertel2025";
+const char* password = "Diciembre2026$";
+const char* ntpServer = "pool.ntp.org";
+
+//***FIN WIFI***
+
+
+//***VARIABLES Y AJUSTES DE TIEMPO***
+unsigned long timestamp;
+
+unsigned long timer;
+unsigned long timer1000;
+
+int segs = 0;
+int mins = 0;
+int horas = 0;
+int GMT = -3;
+
+int long gmtOffset_sec = -10800;
+const int daylightOffset_sec = 0;
+
+//***FIN VARIABLES TIEMPO***
+
+
+//***TELEGRAM***
+
+int bloqtelegram;
+
+//Token del bot 
+#define BOTtoken "8373807622:AAFkzYRff0xraeKJD-SOddWeex2Xt4lFyYs"
+//ID del chat con el bot
+#define CHAT_ID "7601536385"
+
+WiFiClientSecure client;
+UniversalTelegramBot bot(BOTtoken, client);
+
+//***FIN TELEGRAM***
+
+//***MQTT***
+const char name_device = 28;
+
+//TIEMPOS MQTT
+unsigned long now;
+unsigned long lastMeasure1 = 0;  ///variable para contar el tiempo actual
+unsigned long lastMeasure2 = 0;  ///variable para contar el tiempo actual
+
+const unsigned long interval_envio = 30000;  //Intervalo de envio de datos mqtt
+const unsigned long interval_leeo = 60000;   //Intervalo de lectura de datos y guardado en la cola
+int i = 0;
+
+///variables ingresar a la cola struct
+int indice_entra = 0;
+int indice_saca = 0;
+bool flag_vacio = 1;
+
+/////mqqtt
+#define MQTT_HOST IPAddress(192, 168, 5, 123)  ///se debe cambiar por el ip de meca o hall del 4
+#define MQTT_PORT 1884
+#define MQTT_USERNAME "esp32"
+#define MQTT_PASSWORD "mirko15"
+char mqtt_payload[150];  /////
+// Test MQTT Topic
+#define MQTT_PUB "/esp32/datos_sensores"
+AsyncMqttClient mqttClient;
+TimerHandle_t mqttReconnectTimer;
+TimerHandle_t wifiReconnectTimer;
+
+typedef struct
+{
+  long time;
+  float T1;  ///temp en grados
+  float H1;  ///valor entre 0 y 99 // mojado es cercano al 100
+  float luz;  ///valor entre 0 y 99 . si hay luz es cercano al 100 
+  float G1; ///valor entre 0 y 99 
+  float G2; ///valor entre 0 y 99
+  bool oct; ///Lectura del octoacoplador
+  bool Alarma; // 
+
+} estructura;
+////////////////
+const int valor_max_struct = 1000;          ///valor vector de struct
+estructura datos_struct[valor_max_struct];  ///Guardo valores hasta que lo pueda enviar
+estructura aux2;
+
+/////*********************************************************************/////
+////////////////////////////setup wifi/////////////////////////////////////////
+/////*********************************************************************/////
+void setupmqtt() {
+  mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
+  wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
+  WiFi.onEvent(WiFiEvent);
+  mqttClient.onConnect(onMqttConnect);
+  mqttClient.onDisconnect(onMqttDisconnect);
+  mqttClient.onPublish(onMqttPublish);
+  mqttClient.setServer(MQTT_HOST, MQTT_PORT);
+  mqttClient.setCredentials(MQTT_USERNAME, MQTT_PASSWORD);
+  connectToWifi();
+}
+////////////////////////////Envio de datos mqtt//////////////////////////////////////////
+////////Funcion que envia valores cuando la estructura no este vacia ///////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+void fun_envio_mqtt() {
+  fun_saca();           ////veo si hay valores nuevos
+  if (flag_vacio == 0)  ////si hay los envio
+  {
+    Serial.print("enviando");
+    ////genero el string a enviar 1. 2.   3.   4.   5.   6.   7   8  9.       1.         2.        3.      4.       5.           6.   7.        8.        9
+    snprintf(mqtt_payload, 150, "%u&%ld&%.2f&%.2f&%.2f&%.2f&%.2f&%u&%u", name_device, aux2.time, aux2.T1, aux2.H1, aux2.luz, aux2.G1, aux2.G2, aux2.oct, aux2.Alarma);  //random(10,50)
+    aux2.time = 0;                                                                                                                                                   ///limpio valores
+    aux2.T1 = 0;
+    aux2.H1 = 0;
+    aux2.luz = 0;
+    aux2.G1 = 0;
+    aux2.G2 = 0;
+    aux2.oct = 0;
+    aux2.Alarma = 0;
+
+    Serial.print("Publish message: ");
+    Serial.println(mqtt_payload);
+    // Publishes Temperature and Humidity values
+    uint16_t packetIdPub1 = mqttClient.publish(MQTT_PUB, 1, true, mqtt_payload);
+  } else {
+    Serial.println("no hay valores nuevos");
+  }
+}  ///////////////////////////////////////////////////
+
+///////////////////////////////////////////////////
+void connectToWifi() {
+  Serial.println("Connecting to Wi-Fi...");
+  WiFi.begin(ssid, password);
+}  ///////////////////////////////////////////////////
+void connectToMqtt() {
+  Serial.println("Connecting to MQTT...");
+  mqttClient.connect();
+}  ///////////////////////////////////////////////////
+
+void WiFiEvent(WiFiEvent_t event) {
+  Serial.printf("[WiFi-event] event: %d\n", event);
+  switch (event) {
+    case ARDUINO_EVENT_WIFI_STA_GOT_IP:
+      Serial.println("WiFi connected");
+      Serial.println("IP address: ");
+      Serial.println(WiFi.localIP());
+      connectToMqtt();
+      break;
+    case ARDUINO_EVENT_WIFI_STA_DISCONNECTED:
+      Serial.println("WiFi lost connection");
+      xTimerStop(mqttReconnectTimer, 0);  // ensure we don't reconnect to MQTT while reconnecting to Wi-Fi
+      xTimerStart(wifiReconnectTimer, 0);
+      break;
+  }
+}  ///////////////////////////////////////////////////
+////////////////NO TOCAR FUNCIONES MQTT///////////////////////////////////
+void onMqttConnect(bool sessionPresent) {
+  Serial.println("Connected to MQTT.");
+  Serial.print("Session present: ");
+  Serial.println(sessionPresent);
+}  ///////////////////////////////////////////////////
+
+////////////////NO TOCAR FUNCIONES MQTT///////////////////////////////////
+void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
+  Serial.println("Disconnected from MQTT.");
+  if (WiFi.isConnected()) {
+    xTimerStart(mqttReconnectTimer, 0);
+  }
+}
+////////////////NO TOCAR FUNCIONES MQTT///////////////////////////////////
+void onMqttPublish(uint16_t packetId) {
+  Serial.print("Publish acknowledged.");
+  Serial.print("  packetId: ");
+  Serial.println(packetId);
+}  ///////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////
+/////////////Funcion que saca un valor de la estructura para enviar //////
+///////////////////////////////////////////////////////////////////////
+void fun_saca() {
+  if (indice_saca != indice_entra) {
+    aux2.time = datos_struct[indice_saca].time;
+    aux2.T1 = datos_struct[indice_saca].T1;
+    aux2.H1 = datos_struct[indice_saca].H1;
+    aux2.luz = datos_struct[indice_saca].luz;
+    aux2.G1 = datos_struct[indice_saca].G1;
+    aux2.G2 = datos_struct[indice_saca].G2;
+    aux2.oct = datos_struct[indice_saca].oct;
+    aux2.Alarma = datos_struct[indice_saca].Alarma;
+
+    flag_vacio = 0;
+
+    Serial.println(indice_saca);
+    if (indice_saca >= (valor_max_struct - 1)) {
+      indice_saca = 0;
+    } else {
+      indice_saca++;
+    }
+    Serial.print("saco valores de la struct isaca:");
+    Serial.println(indice_saca);
+  } else {
+    flag_vacio = 1;  ///// no hay datos
+  }
+  return;
+}
+/////////////////////////////////////////////////////////////////////
+/////////////funcion que ingresa valores a la cola struct///////////
+///////////////////////////////////////////////////////////////////
+void fun_entra(void) {
+  if (indice_entra >= valor_max_struct) {
+    indice_entra = 0;  ///si llego al maximo de la cola se vuelve a cero
+  }
+  //////////// timestamp/////// consigo la hora
+  Serial.print("> NTP Time:");
+  timestamp = time(NULL);
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo)) {
+    Serial.println("Failed to obtain time");
+    return;  //// si no puede conseguir la hora
+  }
+  Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+  ///////////////////////// fin de consigo la hora
+  datos_struct[indice_entra].time = timestamp;
+  datos_struct[indice_entra].T1 = maptemp;  /// leeo los datos //aca va la funcion de cada sensor
+  datos_struct[indice_entra].H1 = maphum;  //// se puede pasar por un parametro valor entre 0 y 100
+  datos_struct[indice_entra].luz = mapluz;
+  datos_struct[indice_entra].G1 = mapgas;
+  datos_struct[indice_entra].G2 = mapgas2;
+  datos_struct[indice_entra].oct = 1.5;
+  datos_struct[indice_entra].Alarma = 1;
+
+  indice_entra++;
+  Serial.print("saco valores de la struct ientra");
+  Serial.println(indice_entra);
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void setup() 
+{
+  Serial.begin(115200);
+  Serial.println("Programa iniciado");
+  Serial.println("");
+
+//***LEDS***
+
+pinMode(led1, OUTPUT);
+pinMode(led2, OUTPUT);
+pinMode(led3, OUTPUT);
+
+//**FIN LEDS***
+
+//***WIFI***
+
+  WiFi.mode(WIFI_STA);
+  
+  //El BOT manda un mensaje a telegram para anunciar que se inició
+  Serial.print("Memoria libre antes del bot: ");
+  Serial.println(ESP.getFreeHeap());
+//  bot.sendMessage(CHAT_ID, "BOT iniciado", "");
+//  bot.sendMessage(CHAT_ID, "SE PUEDE PEDIR: TEMP ; GAS ; HUM ; LUZ", "");
+  
+  //***MQTT***
+  setupmqtt();
+  //***FIN MQTT***
+
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  struct tm timeinfo;
+  if (getLocalTime(&timeinfo)) 
+  {
+    Serial.println("Hora sincronizada");
+  } else {
+    Serial.println("Error al sincronizar hora");
+  }
+
+//***FIN WIFI***
+
+
+
+//***BOTONES***
+
+  pinMode(BOT1, INPUT_PULLUP);
+  pinMode(BOT2, INPUT_PULLUP);
+  pinMode(BOT3, INPUT_PULLUP);
+  pinMode(BOT4, INPUT_PULLUP);
+  pinMode(BOT5, INPUT_PULLUP);
+
+//***FIN BOTONES***
+
+
+//***SENSORES***
+
+  //Sensor Luz
+  pinMode(pinluz, INPUT);
+  
+  //Sensor Temp
+  if (!aht.begin()) 
+  {
+    Serial.println("No se detectó AHTX0. Revisar conexiones.");
+    while (1); // Detener ejecución si falla
+  }
+  Serial.println("AHTX0 detectado correctamente");
+  
+//***FIN SENSORES***
+
+
+//***DISPLAY***
+
+  lcd_1.init();
+  lcd_1.backlight();
+
+//***FIN DISPLAY***
+
+
+//***EEPROM***
+
+  umbral_eeprom.begin("umbrales", true); //Modo Lectura
+
+  umbtemp = umbral_eeprom.getFloat("umbtemp", 24.0); //EEPROM TEMPERATURA
+  umbgas  = umbral_eeprom.getFloat("umbgas", 24.0);  //EEPROM GAS
+  umbgas2  = umbral_eeprom.getFloat("umbgas2", 24.0); //EEPROM GAS2
+  umbhum  = umbral_eeprom.getFloat("umbhum", 24.0);  //EEPROM HUMEDAD
+  umbluz  = umbral_eeprom.getFloat("umbluz", 24.0);  //EEPROM LUZ
+
+  umbral_eeprom.end();
+
+  Serial.println("---Umbrales---:");
+  Serial.print("Temp: "); 
+  Serial.println(umbtemp);
+
+  Serial.print("Gas: "); 
+  Serial.println(umbgas);
+
+  Serial.print("Gas: "); 
+  Serial.println(umbgas2);
+
+  Serial.print("Humedad: ");
+  Serial.println(umbhum);
+
+  Serial.print("Luz: "); 
+  Serial.println(umbluz);
+
+//***FIN EEPROM***
+
+//***2 CORE LOOPS***
+
+  xTaskCreatePinnedToCore(
+    Task1code,  //Nombre de la funcion
+    "Task1",    //Nombre de la tarea
+    10000,      //Limite de espacio de la tarea
+    NULL,       //Parametro
+    1,          //Prioridad de la tarea
+    &Task1,     //A que tarea se refiere
+    0           //A que nucleo del ESP32 se asigna la tarea
+  );
+
+  xTaskCreatePinnedToCore(
+    Task2code,  //Nombre de la funcion
+    "Task2",    //Nombre de la tarea
+    10000,      //Limite de espacio de la tarea
+    NULL,       //Parametro
+    1,          //Prioridad de la tarea
+    &Task2,     //A que tarea se refiere
+    1           //A que nucleo del ESP32 se asigna la tarea
+  );
+
+ //***FIN 2 CORE LOOPS***
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+                                              //LOOP/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void loop() 
+{
+  timer = millis();
+    void Task1code(void* pvParameters) 
+  {
+    //MQTT LOOP
+    for(;;)
+    {
+      now = millis();
+      if (now - lastMeasure1 > interval_envio) 
+      {  ////envio el doble de lectura por si falla algun envio
+        lastMeasure1 = now;                       /// cargo el valor actual de millis
+        fun_envio_mqtt();                         ///envio los valores por mqtt
+      }
+      if (now - lastMeasure2 > interval_leeo) 
+      {
+        lastMeasure2 = now;  /// cargo el valor actual de millis
+        fun_entra();         ///ingreso los valores a la cola struct
+      }
+    }
+  }     //FIN PRIMER LOOP
+
+  if (lecb1 == PRESIONADO)
+  {
+    Serial.println("BOT1");
+  }
+  if (lecb2 == PRESIONADO)
+  {
+    Serial.println("BOT2");
+  }
+  if (lecb3 == PRESIONADO)
+  {
+    Serial.println("BOT3");
+  }
+  if (lecb4 == PRESIONADO)
+  {
+    Serial.println("BOT4");
+  }
+  if (lecb5 == PRESIONADO)
+  {
+    Serial.println("BOT5");
+  }
+
+  //RECIBIR TIEMPO
+  timestamp = recibirTiempoTimestamp();
+
+//***LEDS***
+
+//SISTEMA PARA PRENDER LEDS
+if (maptemp > umbtemp)
+{
+  int checkeotemp = 1;
+}
+if (maptemp < umbtemp)
+{
+  int checkeotemp = 0;
+}
+
+if (maphum > umbhum)
+{
+  int checkeohum = 1;
+}
+if (maphum < umbhum)
+{
+  int checkeohum = 0;
+}
+
+if (mapluz > umbluz)
+{
+  int checkeoluz = 1;
+}
+if (mapluz < umbluz)
+{
+  int checkeoluz = 0;
+}
+
+if (mapgas > umbgas)
+{
+  int checkeogas = 1;
+}
+if (mapgas < umbgas)
+{
+  int checkeogas = 0;
+}
+
+if (mapgas2 > umbgas2)
+{
+  int checkeogas2 = 1;
+}
+if (mapgas2 < umbgas2)
+{
+  int checkeogas2 = 0;
+}
+
+if (checkeotemp + checkeohum + checkeoluz + checkeogas + checkeogas2 == 0)
+{
+  digitalWrite(led1, HIGH); //verde
+  digitalWrite(led2, LOW);  //naranja
+  digitalWrite(led3, LOW);  //rojo
+}
+if (checkeotemp + checkeohum + checkeoluz + checkeogas + checkeogas2 == 1)
+{
+  digitalWrite(led1, HIGH);
+  digitalWrite(led2, LOW);
+  digitalWrite(led3, LOW);
+}
+if (checkeotemp + checkeohum + checkeoluz + checkeogas + checkeogas2 == 2)
+{
+  digitalWrite(led1, LOW);
+  digitalWrite(led2, HIGH);
+  digitalWrite(led3, LOW);
+}
+if (checkeotemp + checkeohum + checkeoluz + checkeogas + checkeogas2 == 3)
+{
+  digitalWrite(led1, LOW);
+  digitalWrite(led2, HIGH);
+  digitalWrite(led3, LOW);
+}
+if (checkeotemp + checkeohum + checkeoluz + checkeogas + checkeogas2 > 3)
+{
+  digitalWrite(led1, LOW);
+  digitalWrite(led2, LOW);
+  digitalWrite(led3, HIGH);
+}
+
+//***FIN LEDS***
+
+
+//***BOTONES***
+
+  lecb1 = digitalRead(BOT1);
+  lecb2 = digitalRead(BOT2);
+  lecb3 = digitalRead(BOT3);
+  lecb4 = digitalRead(BOT4);
+  lecb5 = digitalRead(BOT5);
+
+//***FIN BOTONES***
+  
+  void Task2code(void* pvParameters) 
+  {
+    //MAQUINA DE ESTADOS
+    for(;;)
+    {       
+      switch (ESTADO)
+      {
+        case ESTADO0:
+        bot.sendMessage(CHAT_ID, "BOT iniciado", "");
+        bot.sendMessage(CHAT_ID, "SE PUEDE PEDIR: TEMP ; GAS ; GAS2 ; HUM ; LUZ", "");
+    
+        ESTADO = PANTALLA1;
+        
+        break;
+    
+        //////////////////////PANTALLA1//////////////////////
+        case PANTALLA1:
+    
+    //***DISPLAY***
+        lcd_1.clear();
+        lcd_1.setCursor(0, 0);
+    
+        if (lectura_seleccionada == 1)
+        {
+          lcd_1.print("TEMP:");
+          lcd_1.print(lectemp);
+        }
+    
+        if (lectura_seleccionada == 2)
+        {
+          lcd_1.print("LUZ:");
+          lcd_1.print(mapluz);
+        }
+    
+        if (lectura_seleccionada == 3)
+        {
+          lcd_1.print("HUMEDAD:");
+          lcd_1.print(maphum);
+        }
+    
+        if (lectura_seleccionada == 4)
+        {
+          lcd_1.print("DIOXIDO:");
+          lcd_1.print(mapgas);
+        }
+    
+        if (lectura_seleccionada == 5)
+        {
+          lcd_1.print("METANO:");
+          lcd_1.print(mapgas2);
+        }
+    
+        lcd_1.setCursor(3, 0);
+        lcd_1.setCursor(6, 0);
+        lcd_1.setCursor(9, 0);
+        lcd_1.setCursor(12, 0);
+        lcd_1.setCursor(14, 0);
+        lcd_1.print(" ");
+    
+    
+    //***FIN DISPLAY***
+      
+    //***SENSORES***
+    
+        //Sensor Gas
+        lecgas = analogRead(pingas); //Lectura gas
+    
+        //Sensor Gas2
+        lecgas2 = analogRead(pingas2); //Lectura gas2
+    
+        //Sensor Luz
+        lecluz = analogRead(pinluz); //Lectura Luz
+        
+        //Sensor Temp
+        sensors_event_t humidity, temp;
+        aht.getEvent(&humidity, &temp);
+        
+        lectemp = temp.temperature; //Lectura Temp en C°
+        lechum = humidity.relative_humidity; //Lectura de humedad en %
+    
+        //MAPEO
+        mapgas = map(lecgas, 0, 4095, 0, 100);
+        mapgas2 = map(lecgas2, 0, 4095, 0, 100);
+        mapluz = map(lecluz, 0, 4095, 0, 100);
+        maphum = lechum; //NO HAY MAPEO
+        maptemp = lectemp; //Temperatura tampoco tiene mapeo
+    
+      //SI SE SUPERAN LOS UMBRALES: (TELEGRAM)
+    
+        //TEMPERATURA
+        if (lectemp > umbtemp && checkeotemp == 0)
+        {
+          //ESTADO = UMBRAL_TEMP_SUPERADO;
+          bot.sendMessage(CHAT_ID, "Se superó el umbral de temperatura, TEMP ACTUAL: " + String(lectemp), "");
+          checkeotemp = 1;
+        }
+        if (lectemp < umbtemp)
+        {
+          checkeotemp = 0;
+        }
+    
+        //GAS
+        if (mapgas > umbgas && checkeogas == 0)
+        {
+          //ESTADO = UMBRAL_GAS_SUPERADO;
+          bot.sendMessage(CHAT_ID, "Se superó el umbral de gas, DIOXIDO ACTUAL: " + String(mapgas), "");
+          checkeogas = 1;
+        }
+        if (mapgas < umbgas)
+        {
+          checkeogas = 0;
+        }
+    
+        //GAS2
+        if (mapgas2 > umbgas2 && checkeogas2 == 0)
+        {
+          //ESTADO = UMBRAL_GAS_SUPERADO;
+          bot.sendMessage(CHAT_ID, "Se superó el umbral de gas, METANO ACTUAL: " + String(mapgas2), "");
+          checkeogas2 = 1;
+        }
+        if (mapgas2 < umbgas2)
+        {
+          checkeogas2 = 0;
+        }
+    
+        //LUZ
+        if (mapluz > umbluz && checkeoluz == 0)
+        {
+          //ESTADO = UMBRAL_LUZ_SUPERADO;
+          bot.sendMessage(CHAT_ID, "Se superó el umbral de luz, LUZ ACTUAL: " + String(mapluz), "");
+          checkeoluz = 1;
+        }
+        if (mapluz < umbluz)
+        {
+          checkeoluz = 0;
+        }
+    
+        //HUMEDAD
+        if (maphum > umbhum && checkeohum == 0)
+        {
+          //ESTADO = UMBRAL_HUM_SUPERADO;
+          bot.sendMessage(CHAT_ID, "Se superó el umbral de humedad, HUMEDAD ACTUAL: " + String(maphum), "");
+          checkeohum = 1;
+        }
+        if (maphum < umbhum)
+        {
+          checkeohum = 0;
+        }
+    
+      //Pedirle al bot que envie valores
+      if (lecb5 == PRESIONADO)
+      {
+        if (timer >= timer1000) //Esto ocurre una vez cada segundo
+        { 
+          int no_leidos = bot.getUpdates(bot.last_message_received + 1); //Se revisa si hay algún mensaje nuevo / no procesado
+          
+          if (no_leidos > 0) //Si hay algun mensaje no procesado
+          {
+            String recibido = bot.messages[0].text; //El nuevo mensaje se iguala a recibido
+    
+            if (recibido == "TEMP")
+            {
+              bot.sendMessage(CHAT_ID, "TEMP ACTUAL: " + String(lectemp), "");
+            }
+            if (recibido == "HUM")
+            {
+              bot.sendMessage(CHAT_ID, "HUMEDAD ACTUAL: " + String(maphum), "");
+            }
+            if (recibido == "GAS")
+            {
+              bot.sendMessage(CHAT_ID, "DIOXIDO ACTUAL: " + String(mapgas), "");
+            }
+            if (recibido == "GAS2")
+            {
+              bot.sendMessage(CHAT_ID, "METANO ACTUAL: " + String(mapgas2), "");
+            }
+            if (recibido == "LUZ")
+            {
+              bot.sendMessage(CHAT_ID, "LUZ ACTUAL: " + String(mapluz), "");
+            }
+          }
+    
+          //IMPRIMIR TIEMPO
+          Serial.print("TIEMPO ACTUAL: ");
+          Serial.println(recibirTiempoString());
+          timer1000 = timer + 1000;
+        }
+    
+      //FIN UMBRALES (FIN TELEGRAM)
+      }
+      
+    //***FIN SENSORES***
+    
+        if (lecb1 == PRESIONADO)
+        {
+          ESTADO = CAMBIO_LECTURA;
+        }
+    
+        break;
+    
+    //////////////////////PANTALLA2//////////////////////
+        case PANTALLA2:
+    
+    //***DISPLAY***
+    
+        lcd_1.clear();
+        lcd_1.setCursor(0, 0);
+        
+        if (umbral_seleccionado == 1)
+        {
+          lcd_1.print("TEMP:");
+          lcd_1.print(umbtemp);
+    
+          lcd_1.setCursor(0, 1);
+          lcd_1.print("GMT:");
+          lcd_1.print(GMT);
+        }
+    
+        if (umbral_seleccionado == 2)
+        {
+          lcd_1.print("LUZ:");
+          lcd_1.print(umbluz);
+    
+          lcd_1.setCursor(0, 1);
+          lcd_1.print("GMT:");
+          lcd_1.print(GMT);
+        }
+    
+        if (umbral_seleccionado == 3)
+        {
+          lcd_1.print("HUMEDAD:");
+          lcd_1.print(umbhum);
+    
+          lcd_1.setCursor(0, 1);
+          lcd_1.print("GMT:");
+          lcd_1.print(GMT);
+        }
+    
+        if (umbral_seleccionado == 4)
+        {
+          lcd_1.print("DIOXIDO:");
+          lcd_1.print(umbgas);
+    
+          lcd_1.setCursor(0, 1);
+          lcd_1.print("GMT:");
+          lcd_1.print(GMT);
+        }
+        
+        if (umbral_seleccionado == 5)
+        {
+          lcd_1.print("METANO:");
+          lcd_1.print(umbgas2);
+    
+          lcd_1.setCursor(0, 1);
+          lcd_1.print("GMT:");
+          lcd_1.print(GMT);
+        }
+    
+    //***FIN DISPLAY***
+    
+        if (lecb1 == PRESIONADO)
+        {
+          ESTADO = SUMAR_GMT; 
+        }
+    
+        if (lecb2 == PRESIONADO)
+        {
+          ESTADO = RESTAR_GMT;
+        }
+            
+        if (lecb3 == PRESIONADO)
+        {
+          ESTADO = CAMBIO_UMBRAL;
+        }
+            
+        if (lecb4 == PRESIONADO)
+        {
+          ESTADO = SUMAR_UMBRAL;
+        }
+       
+        if (lecb5 == PRESIONADO)
+        {
+          ESTADO = RESTAR_UMBRAL;
+        }
+        
+        lcd_1.setCursor(3, 0);
+        lcd_1.setCursor(6, 0);
+        lcd_1.setCursor(9, 0);
+        lcd_1.setCursor(12, 0);
+        lcd_1.setCursor(15, 0);
+    
+        break;
+    
+        case CAMBIO_LECTURA: //CAMBIAR ESTO PARA AGREGAR QUE TAMBIEN SE HAGA DISPLAY DE LA HORA
+    
+        if (lecb1 == SOLTADO)
+        {
+          lectura_seleccionada = lectura_seleccionada + 1;
+          lcd_1.clear();
+    
+          if (lectura_seleccionada > 5) 
+          {
+            lectura_seleccionada = 1;
+          }
+    
+          ESTADO = PANTALLA1;
+        }
+    
+        if(lecb2 == PRESIONADO)
+        {
+          lcd_1.clear();
+          ESTADO = FASE1;
+        }
+    
+        lcd_1.setCursor(3, 0);
+        lcd_1.setCursor(6, 0);
+        lcd_1.setCursor(9, 0);
+        lcd_1.setCursor(12, 0);
+        lcd_1.setCursor(15, 0);
+    
+        break;
+    
+        case FASE1:
+    
+        if (lecb1 == SOLTADO && lecb2 == SOLTADO)
+        {
+          lcd_1.clear();
+          ESTADO = PANTALLA2;
+        }
+    
+        break;
+    
+        case FASE2:
+    
+        if (lecb1 == SOLTADO && lecb2 == SOLTADO)
+        {
+          lcd_1.clear();
+          ESTADO = PANTALLA1;
+    
+    
+    //***EEPROM***
+    
+          umbral_eeprom.begin("umbrales", false);
+    
+          umbral_eeprom.putFloat("umbtemp", umbtemp); //Actualizar Temperatura
+          umbral_eeprom.putFloat("umbgas", umbgas);   //Actualizar Gas
+          umbral_eeprom.putFloat("umbgas2", umbgas2);   //Actualizar Gas2
+          umbral_eeprom.putFloat("umbhum", umbhum);   //Actualizar Humedad
+          umbral_eeprom.putFloat("umbluz", umbluz);   //Actualizar Luz
+    
+          Serial.print("Umbral de Temperatura actualizado: ");
+          Serial.println(umbtemp);
+    
+          Serial.print("Umbral de Gas actualizado: ");
+          Serial.println(umbgas);
+    
+          Serial.print("Umbral de Gas2 actualizado: ");
+          Serial.println(umbgas2);
+    
+          Serial.print("Umbral de Humedad actualizado: ");
+          Serial.println(umbhum);
+    
+          Serial.print("Umbral de Luz actualizado: ");
+          Serial.println(umbluz);
+    
+          umbral_eeprom.end();
+    
+    //***FIN EEPROM***
+    
+        }
+    
+        break;
+    
+        case CAMBIO_UMBRAL:
+    
+        if (lecb3 == SOLTADO)
+        {
+          umbral_seleccionado = umbral_seleccionado + 1;
+          lcd_1.clear();
+    
+          if (umbral_seleccionado > 4) 
+          {
+            umbral_seleccionado = 1;
+          }
+    
+          ESTADO = PANTALLA2;
+        }
+    
+        break;
+    
+        case SUMAR_UMBRAL:
+    
+        if (umbral_seleccionado == 1 && lecb4 == SOLTADO)
+        {
+          umbtemp = umbtemp + 1;
+          lcd_1.clear();
+          ESTADO = PANTALLA2;
+        }
+    
+        if (umbral_seleccionado == 2 && lecb4 == SOLTADO)
+        {
+          umbluz = umbluz + 1;
+          lcd_1.clear();
+          ESTADO = PANTALLA2;
+        }
+    
+        if (umbral_seleccionado == 3 && lecb4 == SOLTADO)
+        {
+          umbhum = umbhum + 1;
+          lcd_1.clear();
+          ESTADO = PANTALLA2;
+        }
+    
+        if (umbral_seleccionado == 4 && lecb4 == SOLTADO)
+        {
+          umbgas = umbgas + 1;
+          lcd_1.clear();
+          ESTADO = PANTALLA2;
+        }
+    
+        if (umbral_seleccionado == 5 && lecb4 == SOLTADO)
+        {
+          umbgas2 = umbgas2 + 1;
+          lcd_1.clear();
+          ESTADO = PANTALLA2;
+        }
+    
+        break;  
+    
+        case RESTAR_UMBRAL:
+    
+        if (umbral_seleccionado == 1 && lecb5 == SOLTADO)
+        {
+          umbtemp = umbtemp - 1;
+          lcd_1.clear();
+          ESTADO = PANTALLA2;
+        }
+    
+        if (umbral_seleccionado == 2 && lecb5 == SOLTADO)
+        {
+          umbluz = umbluz - 1;
+          lcd_1.clear();
+          ESTADO = PANTALLA2;
+        }
+    
+        if (umbral_seleccionado == 3 && lecb5 == SOLTADO)
+        {
+          umbhum = umbhum - 1;
+          lcd_1.clear();
+          ESTADO = PANTALLA2;
+        }
+    
+        if (umbral_seleccionado == 4 && lecb5 == SOLTADO)
+        {
+          umbgas = umbgas - 1;
+          lcd_1.clear();
+          ESTADO = PANTALLA2;
+        }
+    
+        if (umbral_seleccionado == 5 && lecb5 == SOLTADO)
+        {
+          umbgas2 = umbgas2 - 1;
+          lcd_1.clear();
+          ESTADO = PANTALLA2;
+        }
+    
+        break;
+    
+        case SUMAR_GMT:
+    
+        if (lecb1 == SOLTADO)
+        {
+          GMT = GMT + 1;
+    
+          if (GMT > 12)
+          {
+            GMT = 12;
+          }
+    
+          gmtOffset_sec = GMT * 3600;
+          configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+    
+          lcd_1.clear();
+          ESTADO = PANTALLA2;
+        }
+    
+        if (lecb2 == PRESIONADO)
+        {
+          ESTADO = FASE2;
+        }
+    
+        break;
+    
+        case RESTAR_GMT:
+    
+        if (lecb2 == SOLTADO)
+        {
+          GMT = GMT - 1;
+    
+          if (GMT < -12)
+          {
+            GMT = -12;
+          }
+    
+          gmtOffset_sec = GMT * 3600;
+          configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+    
+          lcd_1.clear();
+          ESTADO = PANTALLA2;
+        }
+    
+        if (lecb1 == PRESIONADO)
+        {
+          ESTADO = FASE2;
+        }
+    
+        break;
+      } //FIN MAQUINA DE ESTADOS
+    }   
+  }     //FIN SEGUNDO LOOP
+}       //FIN void loop()
+
+unsigned long recibirTiempoTimestamp() 
+{
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo)) 
+  {
+    Serial.println("Error al obtener hora desde NTP");
+    return 0;
+  }
+  return mktime(&timeinfo);
+}
+
+String recibirTiempoString() {
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo)) {
+    return "Error tiempo";
+  }
+  char buffer[9];
+  sprintf(buffer, "%02d:%02d:%02d", timeinfo.tm_hour, timeinfo.tm_min, timeinfo.tm_sec);
+  return String(buffer);
+}
